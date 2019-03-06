@@ -7,8 +7,7 @@ go:
   - "1.10"
   - "1.11"
   - "master"
-
-  before_install:
+before_install:
   - go get -v -d ./cmd/prometheus-cert-exporter/... ;
   - go get github.com/fzipp/gocyclo
   - go get -u golang.org/x/lint/golint
