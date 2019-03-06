@@ -20,12 +20,34 @@ all: build
 test:
 	cd ${BUILD_DIR}; \
 	go test ${PKG_LIST}; \
-	cd - >/dev/null
 
 fmt:
 	cd ${BUILD_DIR}; \
-	go fmt ${PKG_LIST} ; \
-	cd - >/dev/null
+	gofmt -s -d -e -w .; \
+
+vet:
+	cd ${BUILD_DIR}; \
+	go vet ${PKG_LIST}; \
+
+gocyclo:
+	go get -u github.com/fzipp/gocyclo; \
+	cd ${BUILD_DIR}; \
+	${GOPATH}/bin/gocyclo .; \
+
+golint:
+	go get -u golang.org/x/lint/golint; \
+	cd ${BUILD_DIR}; \
+	${GOPATH}/bin/golint ${PKG_LIST}; \
+
+ineffassign:
+	go get github.com/gordonklaus/ineffassign; \
+	cd ${BUILD_DIR}; \
+	${GOPATH}/bin/ineffassign .; \
+
+misspell:
+	go get -u github.com/client9/misspell/cmd/misspell; \
+	cd ${BUILD_DIR}; \
+	find . -type f -not -path "./vendor/*" -not -path "./.git/*" -print0 | xargs -0 ${GOPATH}/bin/misspell; \
 
 dep:
 	go get -v -d ./cmd/prometheus-cert-exporter/... ;
