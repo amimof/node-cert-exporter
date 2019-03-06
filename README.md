@@ -3,7 +3,7 @@
 
 ---
 
-Prometheus exporter for x509 certificates written in Go. This project is currently in beta and is looking for contributors. Feel free to leave your feedback using the issues or pull requests.
+Prometheus exporter for x509 certificates written in Go. This project is currently in beta and is looking for contributors. Feel free to leave your feedback using issues or pull requests.
 
 # Docker
 ```
@@ -17,4 +17,4 @@ curl -LOs https://github.com/amimof/prometheus-cert-exporter/releases/download/v
 ```
 
 # Contribute
-All help in any form is highly appreciated and your are welcome participate in developing Huego together. To contribute submit a Pull Request. If you want to provide feedback, open up a Github Issue or contact me personally.
+All help in any form is highly appreciated and your are welcome participate in developing together. To contribute submit a Pull Request. If you want to provide feedback, open up a Github Issue or contact me personally.
