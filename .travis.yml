@@ -4,6 +4,8 @@ language: go
 go:
   - "1.10"
   - "1.11"
+before_install:
+  - make dep
 script:
   - make fmt vet gocyclo golint ineffassign misspell
   - make test
