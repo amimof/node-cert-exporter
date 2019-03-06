@@ -5,18 +5,13 @@ go:
   - "1.10"
   - "1.11"
 before_install:
-  - go get -v -d ./cmd/prometheus-cert-exporter/... ;
-  - go get github.com/fzipp/gocyclo
-  - go get -u golang.org/x/lint/golint
-  - go get github.com/gordonklaus/ineffassign
-  - go get -u github.com/client9/misspell/cmd/misspell
-
+  - make dep
 script:
-  - gofmt -s -d -e .
-  - go vet
-  - $GOPATH/bin/gocyclo .
-  - $GOPATH/bin/golint .
-  - $GOPATH/bin/ineffassign .
-  - find . -type f -not -path "./vendor/*" -not -path "./.git/*" -print0 | xargs -0 $GOPATH/bin/misspell
-  - go test -v
-  - go build
+  - make fmt
+  - make vet 
+  - make gocyclo
+  - make golint 
+  - make ineffassign
+  - make misspell
+  - make test
+  - make linux
