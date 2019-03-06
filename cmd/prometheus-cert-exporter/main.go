@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/amimof/prometheus-cert-exporter"
+	"github.com/amimof/prometheus-cert-exporter/pkg/exporter"
 	"github.com/golang/glog"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -45,7 +45,7 @@ func main() {
 		return
 	}
 
-	e := prometheus_cert_exporter.NewExporter()
+	e := exporter.New()
 	e.SetRoots(paths)
 	prometheus.MustRegister(e)
 

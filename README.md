@@ -1,5 +1,5 @@
 # prometheus-cert-exporter
-[![Build Status](https://travis-ci.com/amimof/prometheus-cert-exporter.svg?token=YU8cQELmfms9zTY3ztML&branch=master)](https://travis-ci.com/amimof/prometheus-cert-exporter)
+[![Build Status](https://travis-ci.org/amimof/prometheus-cert-exporter.svg?branch=master)](https://travis-ci.org/amimof/prometheus-cert-exporter) [![Go Report Card](https://goreportcard.com/badge/github.com/amimof/prometheus-cert-exporter)](https://goreportcard.com/report/github.com/amimof/prometheus-cert-exporter) [![huego](https://godoc.org/github.com/amimof/prometheus-cert-exporter?status.svg)](https://godoc.org/github.com/amimof/prometheus-cert-exporter)
 
 ---
 

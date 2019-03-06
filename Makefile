@@ -19,7 +19,7 @@ all: build
 
 test:
 	cd ${BUILD_DIR}; \
-	go test ; \
+	go test ${PKG_LIST}; \
 	cd - >/dev/null
 
 fmt:

@@ -1,4 +1,4 @@
-package prometheus_cert_exporter
+package exporter
 
 import (
 	"crypto/x509"
@@ -103,7 +103,7 @@ func (e *Exporter) Scrape(ch chan<- prometheus.Metric) {
 
 }
 
-func NewExporter() *Exporter {
+func New() *Exporter {
 	return &Exporter{
 		certExpiry: prometheus.NewGaugeVec(prometheus.GaugeOpts{
 			Namespace: "ssl_certificate",
