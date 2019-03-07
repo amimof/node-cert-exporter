@@ -17,9 +17,8 @@ LDFLAGS = -ldflags "-X main.VERSION=${VERSION} -X main.COMMIT=${COMMIT} -X main.
 # Build the project
 all: build
 
-test:
-	cd ${BUILD_DIR}; \
-	go test ${PKG_LIST}; \
+dep:
+	go get -v -d ./cmd/prometheus-cert-exporter/... ;
 
 fmt:
 	cd ${BUILD_DIR}; \
@@ -49,8 +48,11 @@ misspell:
 	cd ${BUILD_DIR}; \
 	find . -type f -not -path "./vendor/*" -not -path "./.git/*" -print0 | xargs -0 ${GOPATH}/bin/misspell; \
 
-dep:
-	go get -v -d ./cmd/prometheus-cert-exporter/... ;
+ci: fmt vet gocyclo golint ineffassign misspell 
+
+test: dep
+	cd ${BUILD_DIR}; \
+	go test ${PKG_LIST}; \
 
 linux: dep
 	CGO_ENABLED=0 GOOS=linux GOARCH=${GOARCH} go build ${LDFLAGS} -o ${BUILD_DIR}/out/${BINARY}-linux-${GOARCH} cmd/prometheus-cert-exporter/main.go
@@ -64,20 +66,7 @@ darwin: dep
 windows: dep
 	CGO_ENABLED=0 GOOS=windows GOARCH=${GOARCH} go build ${LDFLAGS} -o ${BUILD_DIR}/out/${BINARY}-windows-${GOARCH}.exe cmd/prometheus-cert-exporter/main.go
 
-docker_build:
-	docker run --rm -v "${PWD}":/go/src/github.com/amimof/prometheus-cert-exporter -w /go/src/github.com/amimof/prometheus-cert-exporter golang:${GOVERSION} make fmt test
-	docker build -t amimof/prometheus-cert-exporter:${VERSION} .
-	docker tag amimof/prometheus-cert-exporter:${VERSION} amimof/prometheus-cert-exporter:latest
-
-docker_push:
-	docker push amimof/prometheus-cert-exporter:${VERSION}
-	docker push amimof/prometheus-cert-exporter:latest
-
-docker: docker_build docker_push
-
 build: linux darwin rpi windows
 
 clean:
-	-rm -rf ${BUILD_DIR}/out/
-
-.PHONY: linux darwin windows test fmt clean
+	rm -rf ${BUILD_DIR}/out/
