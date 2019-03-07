@@ -12,7 +12,7 @@ import (
 	"sync"
 )
 
-var extensions []string = []string{".pem", "crt", "cert", "cer"}
+var extensions = []string{".pem", "crt", "cert", "cer"}
 
 func findCertPaths(p string) ([]string, error) {
 	paths := []string{}
@@ -40,26 +40,34 @@ func isCertFile(p string) bool {
 	return false
 }
 
+// Exporter implements prometheus.Collector interface
 type Exporter struct {
 	mux        sync.Mutex
 	roots      []string
 	certExpiry *prometheus.GaugeVec
 }
 
+// SetRoots sets the list of file paths that the exporter should search for certificates in
 func (e *Exporter) SetRoots(p []string) {
 	e.roots = p
 }
 
+// Collect satisfies prometheus.Collector interface
 func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 	e.mux.Lock()
 	defer e.mux.Unlock()
 	e.Scrape(ch)
 }
 
+// Describe satisfies prometheus.Collector interface
 func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
 	ch <- e.certExpiry.WithLabelValues("path", "issuer", "alg", "version", "subject", "dns_names", "email_addresses").Desc()
 }
 
+// Scrape iterates over the list of file paths (set by SetRoot) and parses any found x509 certificates.
+// Certificates are parsed and the fields are mapped to prometheus labels which attached to a Gauge.
+// Scrape will create a new time series for each certificate file with its associated labels. The value
+// of the series equals the expiry of the certificate in UNIX timestamp.
 func (e *Exporter) Scrape(ch chan<- prometheus.Metric) {
 	for _, root := range e.roots {
 		paths, err := findCertPaths(root)
@@ -103,6 +111,7 @@ func (e *Exporter) Scrape(ch chan<- prometheus.Metric) {
 
 }
 
+// New creates an instance of Exporter and returns it
 func New() *Exporter {
 	return &Exporter{
 		certExpiry: prometheus.NewGaugeVec(prometheus.GaugeOpts{
