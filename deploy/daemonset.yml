@@ -36,8 +36,9 @@ spec:
       containers:
       - image: amimof/node-cert-exporter:latest
         args:
+        - "--v=2"
         - "--logtostderr=true"
-        - "--path=/host/etc/origin/master/,/host/etc/etcd/"
+        - "--path=/host/etc/origin/node/,/host/etc/etcd/"
         name: node-cert-exporter
         ports:
         - containerPort: 9117
