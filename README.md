@@ -5,6 +5,11 @@
 
 Prometheus exporter for x509 certificates written in Go. This project is currently in beta and is looking for contributors. Feel free to leave your feedback using issues or pull requests.
 
+# Kubernetes DaemonSet
+```
+kubectl apply -f https://raw.githubusercontent.com/amimof/node-cert-exporter/master/deploy/daemonset.yml
+```
+
 # Docker
 ```
 docker run -p 9117:9117 amimof/node-cert-exporter --logtostderr=true --path=/etc/ssl,/dir/with/certs
