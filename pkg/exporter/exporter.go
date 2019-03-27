@@ -72,8 +72,8 @@ func (e *Exporter) Scrape(ch chan<- prometheus.Metric) {
 	for _, root := range e.roots {
 		paths, err := findCertPaths(root)
 		if err != nil {
-			glog.Fatalf("Error looking for certificates in %s: %s", root, err)
-			return
+			glog.Warningf("Error looking for certificates in %s: %s", root, err)
+			continue
 		}
 		for _, path := range paths {
 
