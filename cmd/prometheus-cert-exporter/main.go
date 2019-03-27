@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/amimof/prometheus-cert-exporter/pkg/exporter"
+	"github.com/amimof/node-cert-exporter/pkg/exporter"
 	"github.com/golang/glog"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"

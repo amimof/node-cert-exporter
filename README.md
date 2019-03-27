@@ -1,5 +1,5 @@
-# prometheus-cert-exporter
-[![Build Status](https://travis-ci.org/amimof/prometheus-cert-exporter.svg?branch=master)](https://travis-ci.org/amimof/prometheus-cert-exporter) [![Go Report Card](https://goreportcard.com/badge/github.com/amimof/prometheus-cert-exporter)](https://goreportcard.com/report/github.com/amimof/prometheus-cert-exporter) [![huego](https://godoc.org/github.com/amimof/prometheus-cert-exporter?status.svg)](https://godoc.org/github.com/amimof/prometheus-cert-exporter)
+# node-cert-exporter
+[![Build Status](https://travis-ci.org/amimof/node-cert-exporter.svg?branch=master)](https://travis-ci.org/amimof/node-cert-exporter) [![Go Report Card](https://goreportcard.com/badge/github.com/amimof/node-cert-exporter)](https://goreportcard.com/report/github.com/amimof/node-cert-exporter) [![huego](https://godoc.org/github.com/amimof/node-cert-exporter?status.svg)](https://godoc.org/github.com/amimof/node-cert-exporter)
 
 ---
 
@@ -7,13 +7,13 @@ Prometheus exporter for x509 certificates written in Go. This project is current
 
 # Docker
 ```
-docker run -p 9117:9117 amimof/prometheus-cert-exporter --logtostderr=true --path=/etc/ssl,/dir/with/certs
+docker run -p 9117:9117 amimof/node-cert-exporter --logtostderr=true --path=/etc/ssl,/dir/with/certs
 ```
 
 # Binary
 ```
-curl -LOs https://github.com/amimof/prometheus-cert-exporter/releases/download/1.0.0-beta.1/prometheus-cert-exporter-linux-amd64 && chmod +x prometheus-cert-exporter-linux-amd64
-./prometheus-cert-exporter-linux-amd64 --path=/etc/ssl,/dir/with/certs
+curl -LOs https://github.com/amimof/node-cert-exporter/releases/download/1.0.0-beta.1/node-cert-exporter-linux-amd64 && chmod +x node-cert-exporter-linux-amd64
+./node-cert-exporter-linux-amd64 --path=/etc/ssl,/dir/with/certs
 ```
 
 # Contribute
