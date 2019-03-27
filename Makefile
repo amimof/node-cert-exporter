@@ -2,7 +2,7 @@
 # https://github.com/silven/go-example/blob/master/Makefile
 # https://vic.demuzere.be/articles/golang-makefile-crosscompile/
 
-BINARY=prometheus-cert-exporter
+BINARY=node-cert-exporter
 GOARCH=amd64
 VERSION=1.0.0-beta.1
 COMMIT=$(shell git rev-parse HEAD)
@@ -18,7 +18,7 @@ LDFLAGS = -ldflags "-X main.VERSION=${VERSION} -X main.COMMIT=${COMMIT} -X main.
 all: build
 
 dep:
-	go get -v -d ./cmd/prometheus-cert-exporter/... ;
+	go get -v -d ./cmd/node-cert-exporter/... ;
 
 fmt:
 	cd ${BUILD_DIR}; \
@@ -55,16 +55,16 @@ test: dep
 	go test ${PKG_LIST}; \
 
 linux: dep
-	CGO_ENABLED=0 GOOS=linux GOARCH=${GOARCH} go build ${LDFLAGS} -o ${BUILD_DIR}/out/${BINARY}-linux-${GOARCH} cmd/prometheus-cert-exporter/main.go
+	CGO_ENABLED=0 GOOS=linux GOARCH=${GOARCH} go build ${LDFLAGS} -o ${BUILD_DIR}/out/${BINARY}-linux-${GOARCH} cmd/node-cert-exporter/main.go
 
 rpi: dep
-	CGO_ENABLED=0 GOOS=linux GOARCH=arm go build ${LDFLAGS} -o ${BUILD_DIR}/out/${BINARY}-linux-arm cmd/prometheus-cert-exporter/main.go
+	CGO_ENABLED=0 GOOS=linux GOARCH=arm go build ${LDFLAGS} -o ${BUILD_DIR}/out/${BINARY}-linux-arm cmd/node-cert-exporter/main.go
 
 darwin: dep
-	CGO_ENABLED=0 GOOS=darwin GOARCH=${GOARCH} go build ${LDFLAGS} -o ${BUILD_DIR}/out/${BINARY}-darwin-${GOARCH} cmd/prometheus-cert-exporter/main.go
+	CGO_ENABLED=0 GOOS=darwin GOARCH=${GOARCH} go build ${LDFLAGS} -o ${BUILD_DIR}/out/${BINARY}-darwin-${GOARCH} cmd/node-cert-exporter/main.go
 
 windows: dep
-	CGO_ENABLED=0 GOOS=windows GOARCH=${GOARCH} go build ${LDFLAGS} -o ${BUILD_DIR}/out/${BINARY}-windows-${GOARCH}.exe cmd/prometheus-cert-exporter/main.go
+	CGO_ENABLED=0 GOOS=windows GOARCH=${GOARCH} go build ${LDFLAGS} -o ${BUILD_DIR}/out/${BINARY}-windows-${GOARCH}.exe cmd/node-cert-exporter/main.go
 
 build: linux darwin rpi windows
 

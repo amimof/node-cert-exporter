@@ -1,4 +1,4 @@
-module github.com/amimof/prometheus-cert-exporter
+module github.com/amimof/node-cert-exporter
 
 require (
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
