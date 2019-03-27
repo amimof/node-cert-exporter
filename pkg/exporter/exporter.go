@@ -12,7 +12,7 @@ import (
 	"sync"
 )
 
-var extensions = []string{".pem", "crt", "cert", "cer"}
+var extensions = []string{".pem", ".crt", ".cert", ".cer"}
 
 func findCertPaths(p string) ([]string, error) {
 	paths := []string{}
