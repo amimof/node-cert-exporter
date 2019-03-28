@@ -6,6 +6,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/prometheus/client_golang/prometheus"
 	"io/ioutil"
+	"time"
 	"os"
 	"path/filepath"
 	"strings"
@@ -67,7 +68,7 @@ func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
 // Scrape iterates over the list of file paths (set by SetRoot) and parses any found x509 certificates.
 // Certificates are parsed and the fields are mapped to prometheus labels which attached to a Gauge.
 // Scrape will create a new time series for each certificate file with its associated labels. The value
-// of the series equals the expiry of the certificate in UNIX timestamp.
+// of the series equals the expiry of the certificate in seconds.
 func (e *Exporter) Scrape(ch chan<- prometheus.Metric) {
 	for _, root := range e.roots {
 		paths, err := findCertPaths(root)
@@ -94,7 +95,6 @@ func (e *Exporter) Scrape(ch chan<- prometheus.Metric) {
 				continue
 			}
 
-			notAfter := cert.NotAfter.Unix()
 			labels := prometheus.Labels{
 				"path":            path,
 				"issuer":          cert.Issuer.String(),
@@ -104,7 +104,9 @@ func (e *Exporter) Scrape(ch chan<- prometheus.Metric) {
 				"dns_names":       strings.Join(cert.DNSNames, ","),
 				"email_addresses": strings.Join(cert.EmailAddresses, ","),
 			}
-			e.certExpiry.With(labels).Set(float64(notAfter))
+
+			since := time.Until(cert.NotAfter)
+			e.certExpiry.With(labels).Set(since.Seconds())
 			ch <- e.certExpiry.With(labels)
 		}
 	}
