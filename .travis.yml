@@ -3,14 +3,42 @@ dist: stretch
 language: go
 go:
   - "1.11"
+stages:
+- test
+- build
+- deploy
 before_install:
-  - make dep
-script:
-  - make fmt
-  - make vet 
-  - make gocyclo
-  - make golint 
-  - make ineffassign
-  - make misspell
-  - make test
-  - make linux
+- make dep
+jobs:
+  include:
+  - stage: test
+    name: Go
+    script: 
+    - make fmt
+    - make vet 
+    - make gocyclo
+    - make golint 
+    - make ineffassign
+    - make misspell
+    - make test
+  - stage: build
+    script: 
+    - make linux 
+    - make darwin 
+    - make rpi
+    - make windows
+  - stage: deploy
+    script: skip
+    name: "GitHub releases"
+    deploy:
+      provider: releases
+      api_key: ${GITHUB_API_KEY}
+      file: 
+      - out/node-cert-exporter-linux-amd64
+      - out/node-cert-exporter-darwin-amd64
+      - out/node-cert-exporter-linux-arm
+      - out/node-cert-exporter-windows-amd64.exe
+      skip_cleanup: true
+      draft: true
+      on:
+        tags: true
