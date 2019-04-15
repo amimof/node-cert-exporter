@@ -41,10 +41,3 @@ jobs:
       draft: true
       on:
         tags: true
-  - name: "Docker Hub"
-    provider: script
-    script:
-    - "echo $DOCKER_PASSWORD | docker login -u amimof --password-stdin"
-    - make docker_build
-    on:
-      branch: master
