@@ -68,5 +68,15 @@ windows: dep
 
 build: linux darwin rpi windows
 
+docker_build:
+	docker build -t amimof/logga:${VERSION} .
+	docker tag amimof/logga:${VERSION} amimof/logga:latest
+
+docker_push:
+	docker push amimof/logga:${VERSION}
+	docker push amimof/logga:latest
+
+docker: docker_build docker_push
+
 clean:
 	rm -rf ${BUILD_DIR}/out/
