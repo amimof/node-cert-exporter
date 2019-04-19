@@ -3,13 +3,14 @@ package main
 import (
 	"flag"
 	"fmt"
+	"net/http"
+
 	"github.com/amimof/node-cert-exporter/pkg/exporter"
 	"github.com/golang/glog"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/common/version"
 	"github.com/spf13/pflag"
-	"net/http"
 )
 
 // VERSION is generated during compile as is never to be set here
@@ -25,16 +26,18 @@ var BRANCH string
 var GOVERSION string
 
 var (
-	host   string
-	port   int
-	listen string
-	paths  []string
+	host         string
+	port         int
+	listen       string
+	paths        []string
+	excludePaths []string
 )
 
 func init() {
 	prometheus.MustRegister(version.NewCollector("prometheus_cert_exporter"))
 	pflag.StringVar(&listen, "listen", ":9117", "Address to listen on for metrics and telemetry. Defaults to :9117")
 	pflag.StringSliceVar(&paths, "path", []string{"."}, "List of paths to search for SSL certificates. Defaults to current directory.")
+	pflag.StringSliceVar(&excludePaths, "exclude-path", []string{"."}, "List of paths to exclute from searching for SSL certificates.")
 }
 
 func main() {
@@ -54,6 +57,7 @@ func main() {
 
 	e := exporter.New()
 	e.SetRoots(paths)
+	e.SetExcludeRoots(excludePaths)
 	prometheus.MustRegister(e)
 
 	glog.V(2).Infof("Listening on %s", listen)
