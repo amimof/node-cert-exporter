@@ -12,6 +12,7 @@ before_install:
 jobs:
   include:
   - stage: test
+    name: "Unit Test"
     script: 
     - make fmt
     - make vet 
@@ -20,6 +21,9 @@ jobs:
     - make ineffassign
     - make misspell
     - make test
+  - name: "Integration Test"
+    script:
+    - make integration-test
   - stage: build
     script: 
     - make linux 
@@ -33,10 +37,10 @@ jobs:
       provider: releases
       api_key: ${GITHUB_API_KEY}
       file: 
-      - out/node-cert-exporter-linux-amd64
-      - out/node-cert-exporter-darwin-amd64
-      - out/node-cert-exporter-linux-arm
-      - out/node-cert-exporter-windows-amd64.exe
+      - /home/travis/gopath/src/github.com/amimof/node-cert-exporter/out/node-cert-exporter-linux-amd64
+      - /home/travis/gopath/src/github.com/amimof/node-cert-exporter/out/node-cert-exporter-darwin-amd64
+      - /home/travis/gopath/src/github.com/amimof/node-cert-exporter/out/node-cert-exporter-linux-arm
+      - /home/travis/gopath/src/github.com/amimof/node-cert-exporter/out/node-cert-exporter-windows-amd64.exe
       skip_cleanup: true
       draft: true
       on:

@@ -1,6 +1,6 @@
 FROM golang:alpine AS build-env
 RUN  apk add --no-cache git make ca-certificates
-LABEL maintaner="@amimof (amir.mofasser@gmail.com)"
+LABEL maintaner="@amimof (github.com/amimof)"
 COPY . /go/src/github.com/amimof/node-cert-exporter
 WORKDIR /go/src/github.com/amimof/node-cert-exporter
 RUN make linux
