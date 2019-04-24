@@ -6,11 +6,11 @@ import (
 	"github.com/golang/glog"
 	"github.com/prometheus/client_golang/prometheus"
 	"io/ioutil"
-	"time"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
+	"time"
 )
 
 var extensions = []string{".pem", ".crt", ".cert", ".cer"}
