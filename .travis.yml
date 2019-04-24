@@ -35,16 +35,16 @@ jobs:
     - make windows
   - stage: deploy
     name: "GitHub Releases"
-    #script:
-    #- cd /home/travis/
+    script:
+    - cd /home/travis/gopath/src/github.com/amimof/node-cert-exporter/out/
     deploy:
       provider: releases
       api_key: ${GITHUB_API_KEY}
       file: 
-      - gopath/src/github.com/amimof/node-cert-exporter/out/node-cert-exporter-linux-amd64
-      - gopath/src/github.com/amimof/node-cert-exporter/out/node-cert-exporter-darwin-amd64
-      - gopath/src/github.com/amimof/node-cert-exporter/out/node-cert-exporter-linux-arm
-      - gopath/src/github.com/amimof/node-cert-exporter/out/node-cert-exporter-windows-amd64.exe
+      - node-cert-exporter-linux-amd64
+      - node-cert-exporter-darwin-amd64
+      - node-cert-exporter-linux-arm
+      - node-cert-exporter-windows-amd64.exe
       skip_cleanup: true
       draft: true
       on:
