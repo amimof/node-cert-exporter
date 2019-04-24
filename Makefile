@@ -54,6 +54,23 @@ test: dep
 	cd ${BUILD_DIR}; \
 	go test ${PKG_LIST}; \
 
+integration-test: docker_build
+	mkdir -p ${BUILD_DIR}/out/integration-test/ssl
+	openssl req -new -newkey rsa:1024 -days 365 -nodes -x509 \
+  	-subj '/CN=localhost/C=SE/L=Gothenburg/O=system:nodes/OU=amimof/ST=Vastra Gotalands Lan' \
+  	-keyout ${BUILD_DIR}/out/integration-test/ssl/self-signed-key.pem \
+  	-out ${BUILD_DIR}/out/integration-test/ssl/self-signed.pem
+	docker run -d --name node-cert-exporter -v ${BUILD_DIR}/out/integration-test/ssl:/certs -p 9117:9117 amimof/node-cert-exporter:${VERSION} --logtostderr=true --v=4 --path=/certs
+	sleep 5
+	curl -s http://127.0.0.1:9117/metrics | grep ssl_certificate_expiry_seconds
+	curl -s http://127.0.0.1:9117/metrics | grep 'issuer="CN=localhost,OU=amimof,O=system:nodes,L=Gothenburg,ST=Vastra Gotalands Lan,C=SE"'
+	curl -s http://127.0.0.1:9117/metrics | grep 'path="/certs/self-signed.pem"'
+	curl -s http://127.0.0.1:9117/metrics | grep 'alg="SHA256-RSA"'
+	curl -s http://127.0.0.1:9117/metrics | grep 'dns_names=""'
+	curl -s http://127.0.0.1:9117/metrics | grep 'email_addresses=""'
+	docker kill node-cert-exporter
+	docker rm node-cert-exporter
+
 linux: dep
 	CGO_ENABLED=0 GOOS=linux GOARCH=${GOARCH} go build ${LDFLAGS} -o ${BUILD_DIR}/out/${BINARY}-linux-${GOARCH} cmd/node-cert-exporter/main.go
 
@@ -69,12 +86,12 @@ windows: dep
 build: linux darwin rpi windows
 
 docker_build:
-	docker build -t amimof/logga:${VERSION} .
-	docker tag amimof/logga:${VERSION} amimof/logga:latest
+	docker build -t amimof/node-cert-exporter:${VERSION} .
+	docker tag amimof/node-cert-exporter:${VERSION} amimof/node-cert-exporter:latest
 
 docker_push:
-	docker push amimof/logga:${VERSION}
-	docker push amimof/logga:latest
+	docker push amimof/node-cert-exporter:${VERSION}
+	docker push amimof/node-cert-exporter:latest
 
 docker: docker_build docker_push
 

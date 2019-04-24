@@ -12,6 +12,7 @@ before_install:
 jobs:
   include:
   - stage: test
+    name: "Unit Test"
     script: 
     - make fmt
     - make vet 
@@ -20,6 +21,9 @@ jobs:
     - make ineffassign
     - make misspell
     - make test
+  - name: "Integration Test"
+    script:
+    - make integration-test
   - stage: build
     script: 
     - make linux 
