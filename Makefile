@@ -4,7 +4,7 @@
 
 BINARY=node-cert-exporter
 GOARCH=amd64
-VERSION=1.0.0-beta.1
+VERSION=$(shell git describe --abbrev=0 --tags)
 COMMIT=$(shell git rev-parse HEAD)
 BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
 GOVERSION=$(shell go version | awk -F\go '{print $$3}' | awk '{print $$1}')
