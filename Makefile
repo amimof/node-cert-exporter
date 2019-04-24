@@ -14,6 +14,8 @@ PKG_LIST=$$(go list ./... | grep -v /vendor/)
 # Setup the -ldflags option for go build here, interpolate the variable values
 LDFLAGS = -ldflags "-X main.VERSION=${VERSION} -X main.COMMIT=${COMMIT} -X main.BRANCH=${BRANCH} -X main.GOVERSION=${GOVERSION}"
 
+.PHONY: checkfmt
+
 # Build the project
 all: build
 
@@ -22,7 +24,7 @@ dep:
 
 fmt:
 	cd ${BUILD_DIR}; \
-	gofmt -s -d -e -w .; \
+	gofmt -s -e -d -w .; \
 
 vet:
 	cd ${BUILD_DIR}; \
@@ -47,6 +49,13 @@ misspell:
 	go get -u github.com/client9/misspell/cmd/misspell; \
 	cd ${BUILD_DIR}; \
 	find . -type f -not -path "./vendor/*" -not -path "./.git/*" -print0 | xargs -0 ${GOPATH}/bin/misspell; \
+
+checkfmt:
+	cd ${BUILD_DIR}
+	if [ "`gofmt -l .`" != "" ]; then \
+		echo "Code not formatted, please run 'make fmt'"; \
+		exit 1; \
+	fi
 
 ci: fmt vet gocyclo golint ineffassign misspell 
 

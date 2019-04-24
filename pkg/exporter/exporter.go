@@ -3,15 +3,14 @@ package exporter
 import (
 	"crypto/x509"
 	"encoding/pem"
+	"github.com/golang/glog"
+	"github.com/prometheus/client_golang/prometheus"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/golang/glog"
-	"github.com/prometheus/client_golang/prometheus"
 )
 
 var extensions = []string{".pem", ".crt", ".cert", ".cer"}

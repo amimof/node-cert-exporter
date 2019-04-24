@@ -11,7 +11,7 @@ func TestNew(t *testing.T) {
 		t.Fatalf("roots expected to be %d, got %d", 0, len(e.roots))
 	}
 	// Set new root
-	roots := []string{"/etc/ssl","/etc/kubernetes","/etc/origin"}
+	roots := []string{"/etc/ssl", "/etc/kubernetes", "/etc/origin"}
 	e.SetRoots(roots)
 	if len(e.roots) != 3 {
 		t.Fatalf("roots expected to be %d, got %d", len(roots), len(e.roots))

@@ -12,14 +12,17 @@ before_install:
 jobs:
   include:
   - stage: test
-    name: "Unit Test"
+    name: "Verify"
     script: 
+    - make checkfmt
     - make fmt
     - make vet 
     - make gocyclo
     - make golint 
     - make ineffassign
     - make misspell
+  - name: "Unit Test"
+    script:
     - make test
   - name: "Integration Test"
     script:
