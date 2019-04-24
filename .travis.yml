@@ -22,6 +22,7 @@ jobs:
     - make ineffassign
     - make misspell
   - name: "Unit Test"
+    script:
     - make test
   - name: "Integration Test"
     script:
