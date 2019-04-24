@@ -9,8 +9,6 @@ stages:
 - deploy
 before_install:
 - make dep
-before_deploy:
-- cd /home/travis/gopath/src/github.com/amimof/node-cert-exporter
 jobs:
   include:
   - stage: test
@@ -37,15 +35,16 @@ jobs:
     - make windows
   - stage: deploy
     name: "GitHub Releases"
-    script: skip
+    script:
+    #- d /home/travis/
     deploy:
       provider: releases
       api_key: ${GITHUB_API_KEY}
       file: 
-      - out/node-cert-exporter-linux-amd64
-      - out/node-cert-exporter-darwin-amd64
-      - out/node-cert-exporter-linux-arm
-      - out/node-cert-exporter-windows-amd64.exe
+      - gopath/src/github.com/amimof/node-cert-exporter/out/node-cert-exporter-linux-amd64
+      - gopath/src/github.com/amimof/node-cert-exporter/out/node-cert-exporter-darwin-amd64
+      - gopath/src/github.com/amimof/node-cert-exporter/out/node-cert-exporter-linux-arm
+      - gopath/src/github.com/amimof/node-cert-exporter/out/node-cert-exporter-windows-amd64.exe
       skip_cleanup: true
       draft: true
       on:
