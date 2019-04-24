@@ -3,21 +3,31 @@ package exporter
 import (
 	"crypto/x509"
 	"encoding/pem"
-	"github.com/golang/glog"
-	"github.com/prometheus/client_golang/prometheus"
 	"io/ioutil"
-	"time"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
+	"time"
+
+	"github.com/golang/glog"
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 var extensions = []string{".pem", ".crt", ".cert", ".cer"}
 
-func findCertPaths(p string) ([]string, error) {
+func findCertPaths(p string, exPaths []string) ([]string, error) {
 	paths := []string{}
 	err := filepath.Walk(p, func(path string, info os.FileInfo, err error) error {
+
+		if len(exPaths) > 0 {
+			for _, exPath := range exPaths {
+				if strings.Contains(filepath.Dir(path), exPath) || path == exPath {
+					continue
+				}
+			}
+		}
+
 		if err != nil {
 			return err
 		}
@@ -45,12 +55,18 @@ func isCertFile(p string) bool {
 type Exporter struct {
 	mux        sync.Mutex
 	roots      []string
+	exRoots    []string
 	certExpiry *prometheus.GaugeVec
 }
 
 // SetRoots sets the list of file paths that the exporter should search for certificates in
 func (e *Exporter) SetRoots(p []string) {
 	e.roots = p
+}
+
+// SetExcludeRoots sets the list of file paths that the exporter should exclude search for certificates in
+func (e *Exporter) SetExcludeRoots(p []string) {
+	e.exRoots = p
 }
 
 // Collect satisfies prometheus.Collector interface
@@ -71,7 +87,7 @@ func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
 // of the series equals the expiry of the certificate in seconds.
 func (e *Exporter) Scrape(ch chan<- prometheus.Metric) {
 	for _, root := range e.roots {
-		paths, err := findCertPaths(root)
+		paths, err := findCertPaths(root, e.exRoots)
 		if err != nil {
 			glog.Warningf("Error looking for certificates in %s: %s", root, err)
 			continue
