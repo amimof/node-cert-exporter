@@ -35,8 +35,8 @@ jobs:
     - make windows
   - stage: deploy
     name: "GitHub Releases"
-    script:
-    #- d /home/travis/
+    #script:
+    #- cd /home/travis/
     deploy:
       provider: releases
       api_key: ${GITHUB_API_KEY}
