@@ -19,7 +19,7 @@ docker run -p 9117:9117 amimof/node-cert-exporter --logtostderr=true --path=/etc
 
 # Binary
 ```
-curl -LOs https://github.com/amimof/node-cert-exporter/releases/download/1.0.0-beta.1/node-cert-exporter-linux-amd64 && chmod +x node-cert-exporter-linux-amd64
+curl -LOs https://github.com/amimof/node-cert-exporter/releases/latest/download/node-cert-exporter-linux-amd64 && chmod +x node-cert-exporter-linux-amd64
 ./node-cert-exporter-linux-amd64 --path=/etc/ssl,/dir/with/certs
 ```
 
