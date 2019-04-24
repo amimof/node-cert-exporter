@@ -70,13 +70,20 @@ integration-test: docker_build
   	-keyout ${BUILD_DIR}/out/integration-test/ssl/self-signed-key.pem \
   	-out ${BUILD_DIR}/out/integration-test/ssl/self-signed.pem
 	docker run -d --name node-cert-exporter -v ${BUILD_DIR}/out/integration-test/ssl:/certs -p 9117:9117 amimof/node-cert-exporter:${VERSION} --logtostderr=true --v=4 --path=/certs
-	sleep 5
+	sleep 3
 	curl -s http://127.0.0.1:9117/metrics | grep ssl_certificate_expiry_seconds
 	curl -s http://127.0.0.1:9117/metrics | grep 'issuer="CN=localhost,OU=amimof,O=system:nodes,L=Gothenburg,ST=Vastra Gotalands Lan,C=SE"'
 	curl -s http://127.0.0.1:9117/metrics | grep 'path="/certs/self-signed.pem"'
 	curl -s http://127.0.0.1:9117/metrics | grep 'alg="SHA256-RSA"'
 	curl -s http://127.0.0.1:9117/metrics | grep 'dns_names=""'
 	curl -s http://127.0.0.1:9117/metrics | grep 'email_addresses=""'
+	docker kill node-cert-exporter
+	docker rm node-cert-exporter
+	docker run -d --name node-cert-exporter -v ${BUILD_DIR}/out/integration-test/ssl:/certs -p 9117:9117 amimof/node-cert-exporter:${VERSION} --logtostderr=true --v=4 --path=/certs --exclude-path=/certs
+	sleep 3
+	if [ "`curl -s http://127.0.0.1:9117/metrics | grep ssl_certificate_expiry_seconds`" != "" ]; then \
+		exit 1; \
+	fi
 	docker kill node-cert-exporter
 	docker rm node-cert-exporter
 
