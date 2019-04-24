@@ -20,9 +20,11 @@ func findCertPaths(p string, exPaths []string) ([]string, error) {
 	paths := []string{}
 	err := filepath.Walk(p, func(path string, info os.FileInfo, err error) error {
 
-		for _, exPath := range exPaths {
-			if strings.Contains(filepath.Dir(path), exPath) || path == exPath {
-				continue
+		if len(exPaths) > 0 {
+			for _, exPath := range exPaths {
+				if strings.Contains(filepath.Dir(path), exPath) || path == exPath {
+					continue
+				}
 			}
 		}
 

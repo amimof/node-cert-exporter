@@ -37,7 +37,7 @@ func init() {
 	prometheus.MustRegister(version.NewCollector("prometheus_cert_exporter"))
 	pflag.StringVar(&listen, "listen", ":9117", "Address to listen on for metrics and telemetry. Defaults to :9117")
 	pflag.StringSliceVar(&paths, "path", []string{"."}, "List of paths to search for SSL certificates. Defaults to current directory.")
-	pflag.StringSliceVar(&excludePaths, "exclude-path", []string{"."}, "List of paths to exclute from searching for SSL certificates.")
+	pflag.StringSliceVar(&excludePaths, "exclude-path", []string{}, "List of paths to exclute from searching for SSL certificates.")
 }
 
 func main() {
