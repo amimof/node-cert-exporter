@@ -3,14 +3,15 @@ package exporter
 import (
 	"crypto/x509"
 	"encoding/pem"
-	"github.com/golang/glog"
-	"github.com/prometheus/client_golang/prometheus"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/golang/glog"
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 var extensions = []string{".pem", ".crt", ".cert", ".cer"}
@@ -77,7 +78,7 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 
 // Describe satisfies prometheus.Collector interface
 func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
-	ch <- e.certExpiry.WithLabelValues("path", "issuer", "alg", "version", "subject", "dns_names", "email_addresses").Desc()
+	ch <- e.certExpiry.WithLabelValues("path", "issuer", "alg", "version", "subject", "dns_names", "email_addresses", "node").Desc()
 }
 
 // Scrape iterates over the list of file paths (set by SetRoot) and parses any found x509 certificates.
@@ -118,6 +119,7 @@ func (e *Exporter) Scrape(ch chan<- prometheus.Metric) {
 				"subject":         cert.Subject.String(),
 				"dns_names":       strings.Join(cert.DNSNames, ","),
 				"email_addresses": strings.Join(cert.EmailAddresses, ","),
+				"node":            os.Getenv("HOSTNAME"),
 			}
 
 			since := time.Until(cert.NotAfter)
@@ -137,6 +139,6 @@ func New() *Exporter {
 			Name:      "seconds",
 			Help:      "Number of seconds until certificate expires",
 		},
-			[]string{"path", "issuer", "alg", "version", "subject", "dns_names", "email_addresses"}),
+			[]string{"path", "issuer", "alg", "version", "subject", "dns_names", "email_addresses", "node"}),
 	}
 }
