@@ -1,14 +1,25 @@
 sudo: false
-dist: stretch
+dist: xenial
 language: go
+
 go:
-  - "1.11"
+  - "1.12"
+
+cache:
+  directories:
+    - $GOPATH/pkg/mod
+
+env:
+- GO111MODULE=on
+
 stages:
 - test
 - build
 - deploy
+
 before_install:
 - make dep
+
 jobs:
   include:
   - stage: test

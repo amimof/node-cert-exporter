@@ -33,7 +33,7 @@ vet:
 gocyclo:
 	go get -u github.com/fzipp/gocyclo; \
 	cd ${BUILD_DIR}; \
-	${GOPATH}/bin/gocyclo .; \
+	${GOPATH}/bin/gocyclo -over 15 .; \
 
 golint:
 	go get -u golang.org/x/lint/golint; \
