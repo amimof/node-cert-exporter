@@ -14,7 +14,10 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-var extensions = []string{".pem", ".crt", ".cert", ".cer"}
+var (
+	extensions  = []string{".pem", ".crt", ".cert", ".cer"}
+	hostname, _ = os.Hostname()
+)
 
 func findCertPaths(p string, exPaths []string) ([]string, error) {
 	paths := []string{}
@@ -119,7 +122,7 @@ func (e *Exporter) Scrape(ch chan<- prometheus.Metric) {
 				"subject":         cert.Subject.String(),
 				"dns_names":       strings.Join(cert.DNSNames, ","),
 				"email_addresses": strings.Join(cert.EmailAddresses, ","),
-				"hostname":        os.Hostname(),
+				"hostname":        hostname,
 			}
 
 			since := time.Until(cert.NotAfter)
