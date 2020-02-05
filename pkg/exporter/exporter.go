@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -118,7 +119,7 @@ func (e *Exporter) Scrape(ch chan<- prometheus.Metric) {
 				"path":            path,
 				"issuer":          cert.Issuer.String(),
 				"alg":             cert.SignatureAlgorithm.String(),
-				"version":         string(cert.Version),
+				"version":         strconv.Itoa(cert.Version),
 				"subject":         cert.Subject.String(),
 				"dns_names":       strings.Join(cert.DNSNames, ","),
 				"email_addresses": strings.Join(cert.EmailAddresses, ","),
