@@ -16,8 +16,8 @@ import (
 )
 
 var (
-	extensions  = []string{".pem", ".crt", ".cert", ".cer"}
-	nodename = os.Getenv("NODE_NAME")
+	extensions = []string{".pem", ".crt", ".cert", ".cer"}
+	nodename   = os.Getenv("NODE_NAME")
 )
 
 func findCertPaths(p string, exPaths []string) ([]string, error) {
