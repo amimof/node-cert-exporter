@@ -39,6 +39,11 @@ spec:
         - "--v=2"
         - "--logtostderr=true"
         - "--path=/host/etc/origin/node/,/host/etc/origin/master/,/host/etc/etcd/,/host/etc/kubernetes/pki/"
+        env:
+          - name: NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
         name: node-cert-exporter
         ports:
         - containerPort: 9117
