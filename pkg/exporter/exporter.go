@@ -16,8 +16,9 @@ import (
 )
 
 var (
-	extensions = []string{".pem", ".crt", ".cert", ".cer"}
-	nodename   = os.Getenv("NODE_NAME")
+	extensions  = []string{".pem", ".crt", ".cert", ".cer"}
+	hostname, _ = os.Hostname()
+	nodename    = os.LookupEnv("NODE_NAME")
 )
 
 func findCertPaths(p string, exPaths []string) ([]string, error) {
@@ -82,7 +83,7 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 
 // Describe satisfies prometheus.Collector interface
 func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
-	ch <- e.certExpiry.WithLabelValues("path", "issuer", "alg", "version", "subject", "dns_names", "email_addresses", "nodename").Desc()
+	ch <- e.certExpiry.WithLabelValues("path", "issuer", "alg", "version", "subject", "dns_names", "email_addresses", "hostname", "nodename").Desc()
 }
 
 // Scrape iterates over the list of file paths (set by SetRoot) and parses any found x509 certificates.
@@ -123,6 +124,7 @@ func (e *Exporter) Scrape(ch chan<- prometheus.Metric) {
 				"subject":         cert.Subject.String(),
 				"dns_names":       strings.Join(cert.DNSNames, ","),
 				"email_addresses": strings.Join(cert.EmailAddresses, ","),
+				"hostname":        hostname,
 				"nodename":        nodename,
 			}
 
@@ -143,6 +145,6 @@ func New() *Exporter {
 			Name:      "seconds",
 			Help:      "Number of seconds until certificate expires",
 		},
-			[]string{"path", "issuer", "alg", "version", "subject", "dns_names", "email_addresses", "nodename"}),
+			[]string{"path", "issuer", "alg", "version", "subject", "dns_names", "email_addresses", "hostname", "nodename"}),
 	}
 }
