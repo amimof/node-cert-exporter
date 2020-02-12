@@ -69,7 +69,7 @@ integration-test: docker_build
   	-subj '/CN=localhost/C=SE/L=Gothenburg/O=system:nodes/OU=amimof/ST=Vastra Gotalands Lan' \
   	-keyout ${BUILD_DIR}/out/integration-test/ssl/self-signed-key.pem \
   	-out ${BUILD_DIR}/out/integration-test/ssl/self-signed.pem
-	docker run -d --name node-cert-exporter -v ${BUILD_DIR}/out/integration-test/ssl:/certs -p 9117:9117 amimof/node-cert-exporter:${VERSION} --logtostderr=true --v=4 --path=/certs
+	docker run -d --name node-cert-exporter --hostname 0a9ad966a64e -v ${BUILD_DIR}/out/integration-test/ssl:/certs -p 9117:9117 -e NODE_NAME=docker-node amimof/node-cert-exporter:${VERSION} --logtostderr=true --v=4 --path=/certs
 	sleep 3
 	curl -s http://127.0.0.1:9117/metrics | grep ssl_certificate_expiry_seconds
 	curl -s http://127.0.0.1:9117/metrics | grep 'issuer="CN=localhost,OU=amimof,O=system:nodes,L=Gothenburg,ST=Vastra Gotalands Lan,C=SE"'
@@ -77,6 +77,8 @@ integration-test: docker_build
 	curl -s http://127.0.0.1:9117/metrics | grep 'alg="SHA256-RSA"'
 	curl -s http://127.0.0.1:9117/metrics | grep 'dns_names=""'
 	curl -s http://127.0.0.1:9117/metrics | grep 'email_addresses=""'
+	curl -s http://127.0.0.1:9117/metrics | grep 'hostname="0a9ad966a64e"'
+	curl -s http://127.0.0.1:9117/metrics | grep 'nodename="docker-node"'
 	docker kill node-cert-exporter
 	docker rm node-cert-exporter
 	docker run -d --name node-cert-exporter -v ${BUILD_DIR}/out/integration-test/ssl:/certs -p 9117:9117 amimof/node-cert-exporter:${VERSION} --logtostderr=true --v=4 --path=/certs --exclude-path=/certs
