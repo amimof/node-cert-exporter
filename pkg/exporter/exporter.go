@@ -56,6 +56,15 @@ func isCertFile(p string) bool {
 	return false
 }
 
+func getFirstCertBlock(data []byte) []byte {
+	for block, rest := pem.Decode(data); block != nil; block, rest = pem.Decode(rest) {
+		if block.Type == "CERTIFICATE" {
+			return block.Bytes
+		}
+	}
+	return nil
+}
+
 // Exporter implements prometheus.Collector interface
 type Exporter struct {
 	mux        sync.Mutex
@@ -104,13 +113,12 @@ func (e *Exporter) Scrape(ch chan<- prometheus.Metric) {
 				glog.Warningf("Couldn't read %s: %s", path, err.Error())
 				continue
 			}
-
-			block, _ := pem.Decode(data)
-			if block == nil {
-				glog.Warningf("Couldn't decode %s: %s", path, err.Error())
+			block := getFirstCertBlock(data)
+			if len(block) == 0 {
+				glog.Warningf("Couldn't find a CERTIFICATE block in %s", path)
 				continue
 			}
-			cert, err := x509.ParseCertificate(block.Bytes)
+			cert, err := x509.ParseCertificate(block)
 			if err != nil {
 				glog.Warningf("Couldn't parse %s: %s", path, err.Error())
 				continue
