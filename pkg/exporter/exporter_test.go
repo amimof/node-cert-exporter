@@ -56,7 +56,7 @@ func TestNew(t *testing.T) {
 }
 
 func TestIsCertFile(t *testing.T) {
-	certs := []string{"/etc/ssl/ca.pem", "~/.certs/mydomain.crt", "custom-certificate.cert", "./current/dir/server.cer"}
+	certs := []string{"/etc/ssl/ca.pem", "~/.certs/mydomain.crt", "custom-certificate.cert", "./current/dir/server.cer", "/data/cert.pfx"}
 	for _, cert := range certs {
 		if !isCertFile(cert) {
 			t.Fatalf("Path %s expected to return true, got false", cert)
