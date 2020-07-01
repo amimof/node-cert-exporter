@@ -23,6 +23,13 @@ curl -LOs https://github.com/amimof/node-cert-exporter/releases/latest/download/
 ./node-cert-exporter-linux-amd64 --path=/etc/ssl,/dir/with/certs
 ```
 
+# Building from source
+```
+git clone https://github.com/amimof/node-cert-exporter.git
+cd node-cert-exporter
+make
+```
+
 # Grafana Dashboard
 Once the the node-cert-exporter is scraped by Prometheus, the metrics can easily be visualized using [Grafana](https://grafana.com). Get started by using the [Node Cert Exporter](https://grafana.com/dashboards/9999) dashboard hosted at grafana.com.
 
