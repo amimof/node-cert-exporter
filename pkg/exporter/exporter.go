@@ -27,7 +27,7 @@ func findCertPaths(p string, exPaths []string) ([]string, error) {
 
 		if len(exPaths) > 0 {
 			for _, exPath := range exPaths {
-				if strings.Contains(filepath.Dir(path), exPath) || path == exPath {
+				if strings.Contains(path, exPath) || path == exPath {
 					return nil
 				}
 			}
