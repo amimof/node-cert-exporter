@@ -32,6 +32,7 @@ jobs:
     - make golint 
     - make ineffassign
     - make misspell
+    - make helm_lint
   - name: "Unit Test"
     script:
     - make test
@@ -58,5 +59,19 @@ jobs:
       - out/node-cert-exporter-windows-amd64.exe
       skip_cleanup: true
       draft: true
+      on:
+        tags: true
+  - stage: deploy
+    name: "GitHub Pages - Helm Chart"
+    script:
+    - make helm_package
+    - make helm_index
+    deploy:
+      provider: pages
+      github_token: ${GITHUB_API_KEY}
+      local_dir: charts
+      target_branch: gh-pages
+      skip_cleanup: true
+      keep_history: true
       on:
         tags: true
