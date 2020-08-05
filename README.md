@@ -19,9 +19,9 @@ docker run -p 9117:9117 amimof/node-cert-exporter --logtostderr=true --path=/etc
 
 # Helm
 ```
-helm repo add node-cert-exporter https://holmesb.github.io/node-cert-exporter/charts/
+helm repo add node-cert-exporter https://amimof.github.io/node-cert-exporter
 helm repo update
-helm upgrade --install --values values.yaml node-cert-exporter node-cert-exporter/node_cert_exporter
+helm install node-cert-exporter node-cert-exporter/node-cert-exporter
 ```
 
 # Binary
