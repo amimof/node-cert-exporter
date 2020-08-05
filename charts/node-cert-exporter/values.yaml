@@ -1,0 +1,32 @@
+image:
+  repository: amimof/node-cert-exporter
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets: []
+
+paths:
+  - /host/etc/origin/node/
+  - /host/etc/origin/master/
+  - /host/etc/etcd/
+  - /host/etc/kubernetes/pki/
+
+podAnnotations:
+  prometheus.io/scrape: 'true'
+  prometheus.io/port: '9117'
+
+tolerations:
+  # Allow running on masters:
+  - key: node-role.kubernetes.io/master
+    effect: NoSchedule
+
+serviceAccount:
+  create: true
+
+resources:
+  limits:
+    cpu: 250m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
