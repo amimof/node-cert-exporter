@@ -113,14 +113,14 @@ docker_push:
 	docker push amimof/node-cert-exporter:latest
 
 helm_package:
-	helm package charts/node-cert-exporter -d charts/node-cert-exporter --version ${VERSION} 
+	helm package charts/node-cert-exporter -d charts/node-cert-exporter --version ${VERSION} --app-version ${VERSION}
 
 helm_index:
 	helm repo index charts/
 
 helm_lint:
 	helm lint charts/node-cert-exporter/
-	
+
 docker: docker_build docker_push
 
 clean:
