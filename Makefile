@@ -20,7 +20,8 @@ LDFLAGS = -ldflags "-X main.VERSION=${VERSION} -X main.COMMIT=${COMMIT} -X main.
 all: build
 
 dep:
-	go get -v -d ./cmd/node-cert-exporter/... ;
+	curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash; \
+	go get -v -d ./cmd/node-cert-exporter/... ; \
 
 fmt:
 	cd ${BUILD_DIR}; \
@@ -111,6 +112,15 @@ docker_push:
 	docker push amimof/node-cert-exporter:${VERSION}
 	docker push amimof/node-cert-exporter:latest
 
+helm_package:
+	helm package charts/node-cert-exporter -d charts/node-cert-exporter --version ${VERSION} 
+
+helm_index:
+	helm repo index charts/
+
+helm_lint:
+	helm lint charts/node-cert-exporter/
+	
 docker: docker_build docker_push
 
 clean:
