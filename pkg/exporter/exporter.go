@@ -112,19 +112,19 @@ func (e *Exporter) Scrape(ch chan<- prometheus.Metric) {
 			data, err := ioutil.ReadFile(path)
 			if err != nil {
 				glog.Warningf("Couldn't read %s: %s", path, err.Error())
-				ch <- e.certFailed.With(prometheus.Labels{"path": path, "nodename": nodename})
+				ch <- e.certFailed.With(prometheus.Labels{"path": path, "hostname": hostname, "nodename": nodename})
 				continue
 			}
 			block := getFirstCertBlock(data)
 			if len(block) == 0 {
 				glog.Warningf("Couldn't find a CERTIFICATE block in %s", path)
-				ch <- e.certFailed.With(prometheus.Labels{"path": path, "nodename": nodename})
+				ch <- e.certFailed.With(prometheus.Labels{"path": path, "hostname": hostname, "nodename": nodename})
 				continue
 			}
 			cert, err := x509.ParseCertificate(block)
 			if err != nil {
 				glog.Warningf("Couldn't parse %s: %s", path, err.Error())
-				ch <- e.certFailed.With(prometheus.Labels{"path": path, "nodename": nodename})
+				ch <- e.certFailed.With(prometheus.Labels{"path": path, "hostname": hostname, "nodename": nodename})
 				continue
 			}
 
@@ -164,6 +164,6 @@ func New() *Exporter {
 			Name:      "failed",
 			Help:      "files that were failed to process",
 		},
-			[]string{"path", "nodename"}),
+			[]string{"path", "hostname", "nodename"}),
 	}
 }
