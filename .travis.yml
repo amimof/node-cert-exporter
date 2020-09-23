@@ -3,22 +3,15 @@ dist: xenial
 language: go
 
 go:
-  - "1.12"
-
-cache:
-  directories:
-    - $GOPATH/pkg/mod
-
-env:
-- GO111MODULE=on
+  - "1.13"
+  
+before_install:
+  - curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
 
 stages:
 - test
 - build
 - deploy
-
-before_install:
-- make dep
 
 jobs:
   include:
@@ -26,37 +19,44 @@ jobs:
     name: "Verify"
     script: 
     - make checkfmt
-    - make fmt
+    - make fmt  
     - make vet 
+    - make race
     - make gocyclo
-    - make golint 
+    - make lint 
     - make ineffassign
     - make misspell
     - make helm_lint
+
   - name: "Unit Test"
     script:
     - make test
-  - name: "Integration Test"
-    script:
-    - make integration-test
-  - stage: build
+    - make benchmark
+    - make coverage
+    #- bash <(curl -s https://codecov.io/bash)
+
+  - name: "Compile"
+    stage: build
     script: 
-    - make linux 
-    - make darwin 
-    - make rpi
-    - make windows
+    - make
+
   - stage: deploy
     name: "GitHub Releases"
     script:
-    - make build
+    - GOOS=linux GOARCH=amd64 BUILDPATH=./bin/node-cert-exporter-linux-amd64 make
+    - GOOS=linux GOARCH=arm BUILDPATH=./bin/node-cert-exporter-linux-arm make
+    - GOOS=linux GOARCH=arm64 BUILDPATH=./bin/node-cert-exporter-linux-arm64 make
+    - GOOS=windows GOARCH=amd64 BUILDPATH=./bin/node-cert-exporter-windows-amd64.exe make
+    - GOOS=darwin GOARCH=amd64 BUILDPATH=./bin/node-cert-exporter-darwin-amd64 make
     deploy:
       provider: releases
       api_key: ${GITHUB_API_KEY}
-      file: 
-      - out/node-cert-exporter-linux-amd64
-      - out/node-cert-exporter-darwin-amd64
-      - out/node-cert-exporter-linux-arm
-      - out/node-cert-exporter-windows-amd64.exe
+      file:
+      - bin/node-cert-exporter-linux-amd64
+      - bin/node-cert-exporter-linux-arm
+      - bin/node-cert-exporter-linux-arm64
+      - bin/node-cert-exporter-windows-amd64.exe
+      - bin/node-cert-exporter-darwin-amd64
       skip_cleanup: true
       draft: true
       on:
@@ -64,12 +64,17 @@ jobs:
   - stage: deploy
     name: "GitHub Pages - Helm Chart"
     script:
-    - make helm_package
-    - make helm_index
+    - mkdir files-to-gh-pages
+    - helm package charts/node-cert-exporter -d files-to-gh-pages
+    - cp charts/node-cert-exporter/README.md files-to-gh-pages
+    - cd files-to-gh-pages
+    - helm repo index .
+    - ls -ltr
+    - cat index.yaml
     deploy:
       provider: pages
       github_token: ${GITHUB_API_KEY}
-      local_dir: charts
+      local_dir: files-to-gh-pages
       target_branch: gh-pages
       skip_cleanup: true
       keep_history: true
