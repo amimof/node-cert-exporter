@@ -21,32 +21,6 @@ var (
 	nodename    = os.Getenv("NODE_NAME")
 )
 
-func findCertPaths(p string, exPaths []string) ([]string, error) {
-	paths := []string{}
-	err := filepath.Walk(p, func(path string, info os.FileInfo, err error) error {
-
-		if len(exPaths) > 0 {
-			for _, exPath := range exPaths {
-				if strings.Contains(filepath.Dir(path), exPath) || path == exPath {
-					return nil
-				}
-			}
-		}
-
-		if err != nil {
-			return err
-		}
-		if isCertFile(path) {
-			paths = append(paths, path)
-		}
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	return paths, nil
-}
-
 func isCertFile(p string) bool {
 	for _, e := range extensions {
 		if filepath.Ext(p) == e {
@@ -102,7 +76,27 @@ func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
 // of the series equals the expiry of the certificate in seconds.
 func (e *Exporter) Scrape(ch chan<- prometheus.Metric) {
 	for _, root := range e.roots {
-		paths, err := findCertPaths(root, e.exRoots)
+		exPaths := e.exRoots
+		paths := []string{}
+		err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+			if len(exPaths) > 0 {
+				for _, exPath := range exPaths {
+					if strings.Contains(filepath.Dir(path), exPath) || path == exPath {
+						return nil
+					}
+				}
+			}
+
+			if err != nil {
+				glog.Warningf("Couldn't open %s: %s", path, err.Error())
+				ch <- e.certFailed.With(prometheus.Labels{"path": path, "hostname": hostname, "nodename": nodename})
+				return nil
+			}
+			if isCertFile(path) {
+				paths = append(paths, path)
+			}
+			return nil
+		})
 		if err != nil {
 			glog.Warningf("Error looking for certificates in %s: %s", root, err)
 			continue
