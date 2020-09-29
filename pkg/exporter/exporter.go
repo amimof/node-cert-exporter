@@ -79,11 +79,9 @@ func (e *Exporter) Scrape(ch chan<- prometheus.Metric) {
 		exPaths := e.exRoots
 		paths := []string{}
 		err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
-			if len(exPaths) > 0 {
-				for _, exPath := range exPaths {
-					if strings.Contains(filepath.Dir(path), exPath) || path == exPath {
-						return nil
-					}
+			for _, exPath := range exPaths {
+				if strings.Contains(filepath.Dir(path), exPath) || path == exPath {
+					return nil
 				}
 			}
 
