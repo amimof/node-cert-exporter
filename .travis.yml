@@ -59,6 +59,7 @@ jobs:
       - bin/node-cert-exporter-darwin-amd64
       skip_cleanup: true
       draft: true
+      overwrite: true
       on:
         tags: true
   - stage: deploy
