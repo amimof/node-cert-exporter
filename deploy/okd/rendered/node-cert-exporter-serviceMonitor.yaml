@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    k8s-app: node-cert-exporter
+  name: node-cert-exporter
+  namespace: monitoring
+spec:
+  endpoints:
+  - interval: 15s
+    port: metric
+  selector:
+    matchLabels:
+      k8s-app: node-cert-exporter

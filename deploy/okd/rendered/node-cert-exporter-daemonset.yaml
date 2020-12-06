@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    k8s-app: node-cert-exporter
+  name: node-cert-exporter
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      k8s-app: node-cert-exporter
+  template:
+    metadata:
+      labels:
+        k8s-app: node-cert-exporter
+    spec:
+      containers:
+      - args:
+        - --v=2
+        - --logtostderr=true
+        - --path=/opt/etc/etcd/,/opt/etc/master/,/opt/etc/node/
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        image: amimof/node-cert-exporter:1.0.0
+        name: node-cert-exporter
+        ports:
+        - containerPort: 9117
+          name: metric
+        resources:
+          limits:
+            cpu: 250m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        volumeMounts:
+        - mountPath: /opt/etc/etcd
+          name: etcd
+          readOnly: true
+        - mountPath: /opt/etc/master
+          name: master
+          readOnly: true
+        - mountPath: /opt/etc/node
+          name: node
+          readOnly: true
+      nodeSelector:
+        beta.kubernetes.io/os: linux
+      securityContext:
+        runAsUser: 0
+      serviceAccountName: node-cert-exporter
+      volumes:
+      - hostPath:
+          path: /etc/etcd
+        name: etcd
+      - hostPath:
+          path: /etc/origin/master
+        name: master
+      - hostPath:
+          path: /etc/origin/node/certificates
+        name: node
