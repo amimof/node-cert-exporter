@@ -30,6 +30,14 @@ func isCertFile(p string) bool {
 	return false
 }
 
+func (e *Exporter) isExcluded(s string) bool {
+	for _, v := range e.excludeGlobs {
+		exclude, _ := filepath.Match(v, s)
+		return exclude
+	}
+	return false
+}
+
 func getFirstCertBlock(data []byte) []byte {
 	for block, rest := pem.Decode(data); block != nil; block, rest = pem.Decode(rest) {
 		if block.Type == "CERTIFICATE" {
@@ -41,11 +49,23 @@ func getFirstCertBlock(data []byte) []byte {
 
 // Exporter implements prometheus.Collector interface
 type Exporter struct {
-	mux        sync.Mutex
-	roots      []string
-	exRoots    []string
-	certExpiry *prometheus.GaugeVec
-	certFailed *prometheus.GaugeVec
+	mux          sync.Mutex
+	includeGlobs []string
+	excludeGlobs []string
+	roots        []string
+	exRoots      []string
+	certExpiry   *prometheus.GaugeVec
+	certFailed   *prometheus.GaugeVec
+}
+
+// IncludeGlobs sets the list of file globs the exporter uses to match certificate files for scraping
+func (e *Exporter) IncludeGlobs(g []string) {
+	e.includeGlobs = g
+}
+
+// ExcludeGlobs sets the list of file globs the exporter uses to exclude matched certificate files from being scraped
+func (e *Exporter) ExcludeGlobs(g []string) {
+	e.excludeGlobs = g
 }
 
 // SetRoots sets the list of file paths that the exporter should search for certificates in
@@ -75,9 +95,11 @@ func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
 // Scrape will create a new time series for each certificate file with its associated labels. The value
 // of the series equals the expiry of the certificate in seconds.
 func (e *Exporter) Scrape(ch chan<- prometheus.Metric) {
+	paths := []string{}
+
+	// Find x509 cert files in root and exclude those defined in exroot and put full path to files in paths array
 	for _, root := range e.roots {
 		exPaths := e.exRoots
-		paths := []string{}
 		err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 			for _, exPath := range exPaths {
 				if strings.Contains(filepath.Dir(path), exPath) || path == exPath {
@@ -99,43 +121,59 @@ func (e *Exporter) Scrape(ch chan<- prometheus.Metric) {
 			glog.Warningf("Error looking for certificates in %s: %s", root, err)
 			continue
 		}
-		for _, path := range paths {
+	}
 
-			data, err := ioutil.ReadFile(path)
-			if err != nil {
-				glog.Warningf("Couldn't read %s: %s", path, err.Error())
-				ch <- e.certFailed.With(prometheus.Labels{"path": path, "hostname": hostname, "nodename": nodename})
-				continue
-			}
-			block := getFirstCertBlock(data)
-			if len(block) == 0 {
-				glog.Warningf("Couldn't find a CERTIFICATE block in %s", path)
-				ch <- e.certFailed.With(prometheus.Labels{"path": path, "hostname": hostname, "nodename": nodename})
-				continue
-			}
-			cert, err := x509.ParseCertificate(block)
-			if err != nil {
-				glog.Warningf("Couldn't parse %s: %s", path, err.Error())
-				ch <- e.certFailed.With(prometheus.Labels{"path": path, "hostname": hostname, "nodename": nodename})
-				continue
-			}
-
-			labels := prometheus.Labels{
-				"path":            path,
-				"issuer":          cert.Issuer.String(),
-				"alg":             cert.SignatureAlgorithm.String(),
-				"version":         strconv.Itoa(cert.Version),
-				"subject":         cert.Subject.String(),
-				"dns_names":       strings.Join(cert.DNSNames, ","),
-				"email_addresses": strings.Join(cert.EmailAddresses, ","),
-				"hostname":        hostname,
-				"nodename":        nodename,
-			}
-
-			since := time.Until(cert.NotAfter)
-			e.certExpiry.With(labels).Set(since.Seconds())
-			ch <- e.certExpiry.With(labels)
+	// Loop through globs and excluded globs and put full path into paths array
+	for _, iglobs := range e.includeGlobs {
+		matches, err := filepath.Glob(iglobs)
+		if err != nil {
+			glog.Warningf("%s", err)
+			continue
 		}
+		for _, match := range matches {
+			paths = append(paths, match)
+		}
+	}
+
+	// Read files defined in paths from fs and try to parse a x509 certificate from them.
+	for _, path := range paths {
+		if e.isExcluded(path) {
+			continue
+		}
+		data, err := ioutil.ReadFile(path)
+		if err != nil {
+			glog.Warningf("Couldn't read %s: %s", path, err.Error())
+			ch <- e.certFailed.With(prometheus.Labels{"path": path, "hostname": hostname, "nodename": nodename})
+			continue
+		}
+		block := getFirstCertBlock(data)
+		if len(block) == 0 {
+			glog.Warningf("Couldn't find a CERTIFICATE block in %s", path)
+			ch <- e.certFailed.With(prometheus.Labels{"path": path, "hostname": hostname, "nodename": nodename})
+			continue
+		}
+		cert, err := x509.ParseCertificate(block)
+		if err != nil {
+			glog.Warningf("Couldn't parse %s: %s", path, err.Error())
+			ch <- e.certFailed.With(prometheus.Labels{"path": path, "hostname": hostname, "nodename": nodename})
+			continue
+		}
+
+		labels := prometheus.Labels{
+			"path":            path,
+			"issuer":          cert.Issuer.String(),
+			"alg":             cert.SignatureAlgorithm.String(),
+			"version":         strconv.Itoa(cert.Version),
+			"subject":         cert.Subject.String(),
+			"dns_names":       strings.Join(cert.DNSNames, ","),
+			"email_addresses": strings.Join(cert.EmailAddresses, ","),
+			"hostname":        hostname,
+			"nodename":        nodename,
+		}
+
+		since := time.Until(cert.NotAfter)
+		e.certExpiry.With(labels).Set(since.Seconds())
+		ch <- e.certExpiry.With(labels)
 	}
 
 }
