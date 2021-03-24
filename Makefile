@@ -81,7 +81,7 @@ gocyclo: | $(GOCYCLO) ; $(info $(M) running gocyclo) @ ## Calculates cyclomatic 
 
 .PHONY: ineffassign
 ineffassign: | $(INEFFASSIGN) ; $(info $(M) running ineffassign) @ ## Detects ineffectual assignments in Go code
-	$Q $(INEFFASSIGN) .
+	$Q $(INEFFASSIGN) ./...
 
 .PHONY: misspell
 misspell: | $(MISSPELL) ; $(info $(M) running misspell) @ ## Finds commonly misspelled English words
