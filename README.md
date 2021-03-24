@@ -14,7 +14,7 @@ kubectl apply -f https://raw.githubusercontent.com/amimof/node-cert-exporter/mas
 
 # Docker
 ```
-docker run -p 9117:9117 amimof/node-cert-exporter --logtostderr=true --path=/etc/ssl,/dir/with/certs
+docker run -p 9117:9117 amimof/node-cert-exporter --logtostderr=true --include-glob /etc/ssl/*/*.pem
 ```
 
 # Helm
@@ -27,7 +27,7 @@ helm install node-cert-exporter node-cert-exporter/node-cert-exporter
 # Binary
 ```
 curl -LOs https://github.com/amimof/node-cert-exporter/releases/latest/download/node-cert-exporter-linux-amd64 && chmod +x node-cert-exporter-linux-amd64
-./node-cert-exporter-linux-amd64 --path=/etc/ssl,/dir/with/certs
+./node-cert-exporter-linux-amd64 --include-glob /etc/ssl/*/*.pem
 ```
 
 # Building from source
