@@ -11,21 +11,13 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
 
     - name: Install Helm
       uses: azure/setup-helm@v1
       with:
         version: v3.4.0
-
-    - name: Prepare chart
-      run: |
-        mkdir files-to-gh-pages
-        helm package charts/node-cert-exporter -d files-to-gh-pages
-        cp charts/node-cert-exporter/README.md files-to-gh-pages
-        cd files-to-gh-pages
-        helm repo index .
-        ls -ltr
-        cat index.yaml
 
     - name: Run chart-releaser
       uses: helm/chart-releaser-action@v1.2.0
@@ -37,7 +29,61 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Set up Go
-      uses: actions/setup-go@v2
+    - name: Build Binaries
+      run: |
+        GOOS=linux GOARCH=amd64 BUILDPATH=./bin/node-cert-exporter-linux-amd64 make
+        GOOS=linux GOARCH=arm BUILDPATH=./bin/node-cert-exporter-linux-arm make
+        GOOS=linux GOARCH=arm64 BUILDPATH=./bin/node-cert-exporter-linux-arm64 make
+        GOOS=windows GOARCH=amd64 BUILDPATH=./bin/node-cert-exporter-windows-amd64.exe make
+        GOOS=darwin GOARCH=amd64 BUILDPATH=./bin/node-cert-exporter-darwin-amd64 make
+
+    - name: Create Release
+      uses: actions/create-release@v1
+      id: create_release
       with:
-        go-version: 1.15
+        draft: true
+        prerelease: false
+        release_name: ${{ github.ref }}
+        tag_name: ${{ github.ref }}
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+
+    - name: Upload Binary linux-amd64
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./bin/node-cert-exporter-linux-amd64
+
+    - name: Upload Binary linux-arm
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./bin/node-cert-exporter-linux-arm
+
+    - name: Upload Binary linux-arm64
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./bin/node-cert-exporter-linux-arm64
+
+    - name: Upload Binary windows-amd64
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./bin/node-cert-exporter-windows-amd64
+
+    - name: Upload Binary darwin-amd64
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./bin/node-cert-exporter-darwin-amd64
