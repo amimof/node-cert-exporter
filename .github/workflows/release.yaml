@@ -56,6 +56,7 @@ jobs:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./bin/node-cert-exporter-linux-amd64
         asset_name: node-cert-exporter-linux-amd64
+        asset_content_type: application/zip
 
     - name: Upload Binary linux-arm
       uses: actions/upload-release-asset@v1
@@ -65,6 +66,7 @@ jobs:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./bin/node-cert-exporter-linux-arm
         asset_name: node-cert-exporter-linux-arm
+        asset_content_type: application/zip
 
     - name: Upload Binary linux-arm64
       uses: actions/upload-release-asset@v1
@@ -74,6 +76,7 @@ jobs:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./bin/node-cert-exporter-linux-arm64
         asset_name: node-cert-exporter-linux-arm64
+        asset_content_type: application/zip
 
     - name: Upload Binary windows-amd64
       uses: actions/upload-release-asset@v1
@@ -83,6 +86,7 @@ jobs:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./bin/node-cert-exporter-windows-amd64
         asset_name: node-cert-exporter-windows-amd64
+        asset_content_type: application/zip
 
     - name: Upload Binary darwin-amd64
       uses: actions/upload-release-asset@v1
@@ -92,3 +96,4 @@ jobs:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./bin/node-cert-exporter-darwin-amd64
         asset_name: node-cert-exporter-darwin-amd64
+        asset_content_type: application/zip
