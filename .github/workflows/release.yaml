@@ -1,0 +1,43 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+
+jobs:
+  helm:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install Helm
+      uses: azure/setup-helm@v1
+      with:
+        version: v3.4.0
+
+    - name: Prepare chart
+      run: |
+        mkdir files-to-gh-pages
+        helm package charts/node-cert-exporter -d files-to-gh-pages
+        cp charts/node-cert-exporter/README.md files-to-gh-pages
+        cd files-to-gh-pages
+        helm repo index .
+        ls -ltr
+        cat index.yaml
+
+    - name: Run chart-releaser
+      uses: helm/chart-releaser-action@v1.2.0
+      env:
+        CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        
+  pages:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.15
