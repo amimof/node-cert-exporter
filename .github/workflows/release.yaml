@@ -24,7 +24,7 @@ jobs:
       env:
         CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         
-  pages:
+  releases:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v2
@@ -55,6 +55,7 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./bin/node-cert-exporter-linux-amd64
+        asset_name: node-cert-exporter-linux-amd64
 
     - name: Upload Binary linux-arm
       uses: actions/upload-release-asset@v1
@@ -63,6 +64,7 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./bin/node-cert-exporter-linux-arm
+        asset_name: node-cert-exporter-linux-arm
 
     - name: Upload Binary linux-arm64
       uses: actions/upload-release-asset@v1
@@ -71,6 +73,7 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./bin/node-cert-exporter-linux-arm64
+        asset_name: node-cert-exporter-linux-arm64
 
     - name: Upload Binary windows-amd64
       uses: actions/upload-release-asset@v1
@@ -79,6 +82,7 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./bin/node-cert-exporter-windows-amd64
+        asset_name: node-cert-exporter-windows-amd64
 
     - name: Upload Binary darwin-amd64
       uses: actions/upload-release-asset@v1
@@ -87,3 +91,4 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./bin/node-cert-exporter-darwin-amd64
+        asset_name: node-cert-exporter-darwin-amd64
