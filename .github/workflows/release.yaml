@@ -21,6 +21,8 @@ jobs:
 
     - name: Run chart-releaser
       uses: helm/chart-releaser-action@v1.2.0
+      with:
+        charts_dir: ./charts/node-cert-exporter
       env:
         CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         
@@ -84,8 +86,8 @@ jobs:
         GITHUB_TOKEN: ${{ github.token }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./bin/node-cert-exporter-windows-amd64
-        asset_name: node-cert-exporter-windows-amd64
+        asset_path: ./bin/node-cert-exporter-windows-amd64.exe
+        asset_name: node-cert-exporter-windows-amd64.exe
         asset_content_type: application/zip
 
     - name: Upload Binary darwin-amd64
