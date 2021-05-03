@@ -2,9 +2,8 @@ name: Release
 
 on:
   push:
-    tags:
-    - "v*"
-
+    branches:
+    - "master"
 
 jobs:
   helm:
@@ -30,6 +29,7 @@ jobs:
         CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         
   releases:
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v2
