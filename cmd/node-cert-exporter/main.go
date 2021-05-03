@@ -40,8 +40,8 @@ func init() {
 	pflag.StringVar(&listen, "listen", ":9117", "Address to listen on for metrics and telemetry. Defaults to :9117")
 	pflag.StringSliceVar(&paths, "path", []string{"."}, "List of paths to search for SSL certificates. Defaults to current directory.")
 	pflag.StringSliceVar(&excludePaths, "exclude-path", []string{}, "List of paths to exclute from searching for SSL certificates.")
-	pflag.StringSliceVar(&includeGlobs, "include-glob", []string{}, "List files matching a pattern to include. This flag can be used multple times.")
-	pflag.StringSliceVar(&excludeGlobs, "exclude-glob", []string{}, "List files matching a pattern to exclude. This flag can be used multple times.")
+	pflag.StringSliceVar(&includeGlobs, "include-glob", []string{}, "List files matching a pattern to include. This flag can be used multiple times.")
+	pflag.StringSliceVar(&excludeGlobs, "exclude-glob", []string{}, "List files matching a pattern to exclude. This flag can be used multiple times.")
 }
 
 func main() {

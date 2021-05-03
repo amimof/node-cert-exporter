@@ -1,5 +1,5 @@
 # node-cert-exporter
-[![Build Status](https://travis-ci.org/amimof/node-cert-exporter.svg?branch=master)](https://travis-ci.org/amimof/node-cert-exporter) [![Go Report Card](https://goreportcard.com/badge/github.com/amimof/node-cert-exporter)](https://goreportcard.com/report/github.com/amimof/node-cert-exporter) [![huego](https://godoc.org/github.com/amimof/node-cert-exporter?status.svg)](https://godoc.org/github.com/amimof/node-cert-exporter)
+[![Go Workflow](https://github.com/amimof/node-cert-exporter/actions/workflows/go.yaml/badge.svg)](https://github.com/amimof/node-cert-exporter/actions/workflows/go.yaml) [![Go Report Card](https://goreportcard.com/badge/github.com/amimof/node-cert-exporter)](https://goreportcard.com/report/github.com/amimof/node-cert-exporter) [![huego](https://godoc.org/github.com/amimof/node-cert-exporter?status.svg)](https://godoc.org/github.com/amimof/node-cert-exporter)
 
 ---
 

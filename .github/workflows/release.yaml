@@ -1,0 +1,104 @@
+name: Release
+
+on:
+  push:
+    tags:
+    - "v*"
+
+
+jobs:
+  helm:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Configure Git
+      run: |
+        git config user.name "$GITHUB_ACTOR"
+        git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+    - name: Install Helm
+      uses: azure/setup-helm@v1
+      with:
+        version: v3.4.0
+
+    - name: Run chart-releaser
+      uses: helm/chart-releaser-action@v1.2.0
+      env:
+        CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        
+  releases:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build Binaries
+      run: |
+        GOOS=linux GOARCH=amd64 BUILDPATH=./bin/node-cert-exporter-linux-amd64 make
+        GOOS=linux GOARCH=arm BUILDPATH=./bin/node-cert-exporter-linux-arm make
+        GOOS=linux GOARCH=arm64 BUILDPATH=./bin/node-cert-exporter-linux-arm64 make
+        GOOS=windows GOARCH=amd64 BUILDPATH=./bin/node-cert-exporter-windows-amd64.exe make
+        GOOS=darwin GOARCH=amd64 BUILDPATH=./bin/node-cert-exporter-darwin-amd64 make
+
+    - name: Create Release
+      uses: actions/create-release@v1
+      id: create_release
+      with:
+        draft: true
+        prerelease: false
+        release_name: ${{ github.ref }}
+        tag_name: ${{ github.ref }}
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+
+    - name: Upload Binary linux-amd64
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./bin/node-cert-exporter-linux-amd64
+        asset_name: node-cert-exporter-linux-amd64
+        asset_content_type: application/zip
+
+    - name: Upload Binary linux-arm
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./bin/node-cert-exporter-linux-arm
+        asset_name: node-cert-exporter-linux-arm
+        asset_content_type: application/zip
+
+    - name: Upload Binary linux-arm64
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./bin/node-cert-exporter-linux-arm64
+        asset_name: node-cert-exporter-linux-arm64
+        asset_content_type: application/zip
+
+    - name: Upload Binary windows-amd64
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./bin/node-cert-exporter-windows-amd64.exe
+        asset_name: node-cert-exporter-windows-amd64.exe
+        asset_content_type: application/zip
+
+    - name: Upload Binary darwin-amd64
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./bin/node-cert-exporter-darwin-amd64
+        asset_name: node-cert-exporter-darwin-amd64
+        asset_content_type: application/zip
