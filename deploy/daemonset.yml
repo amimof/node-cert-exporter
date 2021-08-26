@@ -34,7 +34,7 @@ spec:
         prometheus.io/port: '9117'
     spec:
       containers:
-      - image: amimof/node-cert-exporter:latest
+      - image: ghcr.io/amimof/node-cert-exporter:latest
         args:
         - "--v=2"
         - "--logtostderr=true"
