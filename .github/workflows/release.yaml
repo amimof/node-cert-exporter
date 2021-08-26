@@ -7,6 +7,10 @@ on:
     branches:
     - "master"
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
   helm:
     runs-on: ubuntu-18.04
