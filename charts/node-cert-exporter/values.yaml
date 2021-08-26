@@ -1,5 +1,5 @@
 image:
-  repository: amimof/node-cert-exporter
+  repository: ghcr.io/amimof/node-cert-exporter
   pullPolicy: IfNotPresent
   tag: "latest"
 
