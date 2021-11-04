@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	extensions  = []string{".pem", ".crt", ".cert", ".cer", ".pfx"}
+	extensions  = []string{".crt", ".cert", ".cer", ".pfx"}
 	hostname, _ = os.Hostname()
 	nodename    = os.Getenv("NODE_NAME")
 )

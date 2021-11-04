@@ -1,6 +1,5 @@
 # node-cert-exporter
-[![Go Workflow](https://github.com/amimof/node-cert-exporter/actions/workflows/go.yaml/badge.svg)](https://github.com/amimof/node-cert-exporter/actions/workflows/go.yaml) [![Go Report Card](https://goreportcard.com/badge/github.com/amimof/node-cert-exporter)](https://goreportcard.com/report/github.com/amimof/node-cert-exporter) [![huego](https://godoc.org/github.com/amimof/node-cert-exporter?status.svg)](https://godoc.org/github.com/amimof/node-cert-exporter)
-
+This project is a fork to remove *.pem support from node-cert-exporter. Hopefully I'll be able to circle back to this and parameterize file types to scan for an upstream PR.
 ---
 
 `Prometheus` exporter for x509 certificates written in Go. `node-cert-exporter` will parse SSL certificates in a number of directories recursively and expose their expiry as a Prometheus metric at `/metrics`. It can run on `Kubernetes` as a `Deployment` or `DaemonSet`, or using `Docker`. 
