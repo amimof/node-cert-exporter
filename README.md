@@ -14,7 +14,7 @@ kubectl apply -f https://raw.githubusercontent.com/amimof/node-cert-exporter/mas
 
 # Docker
 ```
-docker run -p 9117:9117 amimof/node-cert-exporter --logtostderr=true --include-glob /etc/ssl/*/*.pem
+docker run -p 9117:9117 ghcr.io/amimof/node-cert-exporter --logtostderr=true --include-glob /etc/ssl/*/*.pem
 ```
 
 # Helm
