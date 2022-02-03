@@ -1,4 +1,4 @@
-FROM golang:1.15.3-alpine AS build-env
+FROM golang:1.16.13-alpine AS build-env
 RUN  apk add --no-cache git make ca-certificates
 LABEL maintaner="@amimof (github.com/amimof)"
 COPY . /go/src/github.com/amimof/node-cert-exporter
