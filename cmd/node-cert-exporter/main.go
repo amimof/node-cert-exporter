@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/amimof/node-cert-exporter/pkg/exporter"
 	"github.com/golang/glog"
@@ -33,6 +34,9 @@ var (
 	excludePaths []string
 	includeGlobs []string
 	excludeGlobs []string
+	tls          bool
+	tlsCertFile  string
+	tlsKeyFile   string
 )
 
 func init() {
@@ -42,6 +46,9 @@ func init() {
 	pflag.StringSliceVar(&excludePaths, "exclude-path", []string{}, "List of paths to exclute from searching for SSL certificates.")
 	pflag.StringSliceVar(&includeGlobs, "include-glob", []string{}, "List files matching a pattern to include. This flag can be used multiple times.")
 	pflag.StringSliceVar(&excludeGlobs, "exclude-glob", []string{}, "List files matching a pattern to exclude. This flag can be used multiple times.")
+	pflag.BoolVar(&tls, "tls", false, "Enable TLS for node-cert-exporter. Defaults to false.")
+	pflag.StringVar(&tlsCertFile, "tls-cert-file", "", "Path to a TLS certificate to use when serving. Required for TLS.")
+	pflag.StringVar(&tlsKeyFile, "tls-key-file", "", "Path to a TLS private key to use when serving. Required for TLS.")
 }
 
 func main() {
@@ -70,5 +77,19 @@ func main() {
 	glog.V(2).Infof("Listening on %s", listen)
 	http.Handle("/metrics", promhttp.Handler())
 
-	glog.Fatal(http.ListenAndServe(listen, nil))
+	if tls {
+		if tlsCertFile == "" || tlsKeyFile == "" {
+			glog.Fatal("--tls requires --tls-cert-file and --tls-key-file")
+		}
+		if _, err := os.Stat(tlsCertFile); err != nil {
+			glog.Fatal("Trying to use TLS but could not open tls-cert-file: ", err)
+		}
+		if _, err := os.Stat(tlsKeyFile); err != nil {
+			glog.Fatal("Trying to use TLS but could not open tls-key-file: ", err)
+		}
+		glog.Fatal(http.ListenAndServeTLS(listen, tlsCertFile, tlsKeyFile, nil))
+	} else {
+		glog.Fatal(http.ListenAndServe(listen, nil))
+	}
+
 }
