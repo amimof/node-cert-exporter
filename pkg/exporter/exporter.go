@@ -49,13 +49,14 @@ func getFirstCertBlock(data []byte) []byte {
 
 // Exporter implements prometheus.Collector interface
 type Exporter struct {
-	mux          sync.Mutex
-	includeGlobs []string
-	excludeGlobs []string
-	roots        []string
-	exRoots      []string
-	certExpiry   *prometheus.GaugeVec
-	certFailed   *prometheus.GaugeVec
+	mux           sync.Mutex
+	includeGlobs  []string
+	excludeGlobs  []string
+	roots         []string
+	exRoots       []string
+	includeLabels []string
+	certExpiry    *prometheus.GaugeVec
+	certFailed    *prometheus.GaugeVec
 }
 
 // IncludeGlobs sets the list of file globs the exporter uses to match certificate files for scraping
@@ -87,7 +88,7 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 
 // Describe satisfies prometheus.Collector interface
 func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
-	ch <- e.certExpiry.WithLabelValues("path", "issuer", "alg", "version", "subject", "dns_names", "email_addresses", "hostname", "nodename").Desc()
+	ch <- e.certExpiry.WithLabelValues(e.includeLabels...).Desc()
 }
 
 // Scrape iterates over the list of file paths (set by SetRoot) and parses any found x509 certificates.
@@ -159,7 +160,7 @@ func (e *Exporter) Scrape(ch chan<- prometheus.Metric) {
 			continue
 		}
 
-		labels := prometheus.Labels{
+		defaultPromLabels := prometheus.Labels{
 			"path":            path,
 			"issuer":          cert.Issuer.String(),
 			"alg":             cert.SignatureAlgorithm.String(),
@@ -170,24 +171,45 @@ func (e *Exporter) Scrape(ch chan<- prometheus.Metric) {
 			"hostname":        hostname,
 			"nodename":        nodename,
 		}
+		var promLabels = make(prometheus.Labels)
+		for _, l := range e.includeLabels {
+			if val, ok := defaultPromLabels[l]; ok {
+				promLabels[l] = val
+			}
+		}
 
 		since := time.Until(cert.NotAfter)
-		e.certExpiry.With(labels).Set(since.Seconds())
-		ch <- e.certExpiry.With(labels)
+		e.certExpiry.With(promLabels).Set(since.Seconds())
+		ch <- e.certExpiry.With(promLabels)
 	}
 
 }
 
 // New creates an instance of Exporter and returns it
-func New() *Exporter {
+func New(includeLabels ...string) *Exporter {
+	defaultPromLabels := []string{"path", "issuer", "alg", "version", "subject", "dns_names", "email_addresses", "hostname", "nodename"}
+	promLabels := []string{}
+
+	if len(includeLabels) == 0 {
+		promLabels = defaultPromLabels
+	} else {
+		for _, i := range includeLabels {
+			for _, f := range defaultPromLabels {
+				if i == f {
+					promLabels = append(promLabels, i)
+				}
+			}
+		}
+	}
 	return &Exporter{
+		includeLabels: promLabels,
 		certExpiry: prometheus.NewGaugeVec(prometheus.GaugeOpts{
 			Namespace: "ssl_certificate",
 			Subsystem: "expiry",
 			Name:      "seconds",
 			Help:      "Number of seconds until certificate expires",
 		},
-			[]string{"path", "issuer", "alg", "version", "subject", "dns_names", "email_addresses", "hostname", "nodename"}),
+			promLabels),
 		certFailed: prometheus.NewGaugeVec(prometheus.GaugeOpts{
 			Namespace: "ssl_certificate",
 			Subsystem: "expiry",
