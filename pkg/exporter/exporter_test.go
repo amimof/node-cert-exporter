@@ -3,6 +3,7 @@ package exporter
 import (
 	"bytes"
 	"encoding/pem"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -91,5 +92,25 @@ func TestGetFirstCertBlock(t *testing.T) {
 			(table.result != nil && !bytes.Equal(expected.Bytes, res)) {
 			t.Errorf("getFirstCertBlock did not return expected result")
 		}
+	}
+}
+
+func TestNewExporterWithIncludeLabels(t *testing.T) {
+	e := New("alg", "path")
+	w := []string{"alg", "path"}
+	if !reflect.DeepEqual(e.includeLabels, w) {
+		t.Errorf("configuring prometheus labels in New() did not return successfully")
+		t.Errorf("Have: %v", e.includeLabels)
+		t.Errorf("Want: %v", w)
+	}
+}
+
+func TestNewExporterWithDefaultLabels(t *testing.T) {
+	e := New()
+	w := []string{"path", "issuer", "alg", "version", "subject", "dns_names", "email_addresses", "hostname", "nodename"}
+	if !reflect.DeepEqual(e.includeLabels, w) {
+		t.Errorf("default prometheus labels in New() did not return successfully")
+		t.Errorf("Have: %v", e.includeLabels)
+		t.Errorf("Want: %v", w)
 	}
 }

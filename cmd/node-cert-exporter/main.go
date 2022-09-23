@@ -27,16 +27,17 @@ var BRANCH string
 var GOVERSION string
 
 var (
-	host         string
-	port         int
-	listen       string
-	paths        []string
-	excludePaths []string
-	includeGlobs []string
-	excludeGlobs []string
-	tls          bool
-	tlsCertFile  string
-	tlsKeyFile   string
+	host          string
+	port          int
+	listen        string
+	paths         []string
+	excludePaths  []string
+	includeGlobs  []string
+	excludeGlobs  []string
+	includeLabels []string
+	tls           bool
+	tlsCertFile   string
+	tlsKeyFile    string
 )
 
 func init() {
@@ -46,6 +47,7 @@ func init() {
 	pflag.StringSliceVar(&excludePaths, "exclude-path", []string{}, "List of paths to exclute from searching for SSL certificates.")
 	pflag.StringSliceVar(&includeGlobs, "include-glob", []string{}, "List files matching a pattern to include. This flag can be used multiple times.")
 	pflag.StringSliceVar(&excludeGlobs, "exclude-glob", []string{}, "List files matching a pattern to exclude. This flag can be used multiple times.")
+	pflag.StringSliceVar(&includeLabels, "include-labels", []string{}, "List of labels to include in emitted metrics. This flag can be used multiple times. Default is all labels.")
 	pflag.BoolVar(&tls, "tls", false, "Enable TLS for node-cert-exporter. Defaults to false.")
 	pflag.StringVar(&tlsCertFile, "tls-cert-file", "", "Path to a TLS certificate to use when serving. Required for TLS.")
 	pflag.StringVar(&tlsKeyFile, "tls-key-file", "", "Path to a TLS private key to use when serving. Required for TLS.")
@@ -66,7 +68,7 @@ func main() {
 		return
 	}
 
-	e := exporter.New()
+	e := exporter.New(includeLabels...)
 	e.SetRoots(paths)
 	e.SetExcludeRoots(excludePaths)
 	e.IncludeGlobs(includeGlobs)
