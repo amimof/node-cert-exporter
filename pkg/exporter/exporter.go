@@ -87,7 +87,7 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 
 // Describe satisfies prometheus.Collector interface
 func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
-	ch <- e.certExpiry.WithLabelValues("path", "issuer", "alg", "version", "subject", "dns_names", "email_addresses", "hostname", "nodename").Desc()
+	ch <- e.certExpiry.WithLabelValues("path", "issuer", "alg", "version", "subject", "dns_names", "email_addresses", "hostname", "nodename", "serial").Desc()
 }
 
 // Scrape iterates over the list of file paths (set by SetRoot) and parses any found x509 certificates.
@@ -169,6 +169,7 @@ func (e *Exporter) Scrape(ch chan<- prometheus.Metric) {
 			"email_addresses": strings.Join(cert.EmailAddresses, ","),
 			"hostname":        hostname,
 			"nodename":        nodename,
+			"serial":          cert.SerialNumber.String(),
 		}
 
 		since := time.Until(cert.NotAfter)
@@ -187,7 +188,7 @@ func New() *Exporter {
 			Name:      "seconds",
 			Help:      "Number of seconds until certificate expires",
 		},
-			[]string{"path", "issuer", "alg", "version", "subject", "dns_names", "email_addresses", "hostname", "nodename"}),
+			[]string{"path", "issuer", "alg", "version", "subject", "dns_names", "email_addresses", "hostname", "nodename", "serial"}),
 		certFailed: prometheus.NewGaugeVec(prometheus.GaugeOpts{
 			Namespace: "ssl_certificate",
 			Subsystem: "expiry",
