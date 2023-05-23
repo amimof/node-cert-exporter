@@ -42,11 +42,22 @@ jobs:
 
     - name: Build Binaries
       run: |
+        # Linux
         GOOS=linux GOARCH=amd64 BUILDPATH=./bin/node-cert-exporter-linux-amd64 make
         GOOS=linux GOARCH=arm BUILDPATH=./bin/node-cert-exporter-linux-arm make
         GOOS=linux GOARCH=arm64 BUILDPATH=./bin/node-cert-exporter-linux-arm64 make
+        GOOS=linux GOARCH=386 BUILDPATH=./bin/node-cert-exporter-linux-386 make
+        # Windows
         GOOS=windows GOARCH=amd64 BUILDPATH=./bin/node-cert-exporter-windows-amd64.exe make
+        GOOS=windows GOARCH=arm BUILDPATH=./bin/node-cert-exporter-windows-arm.exe make
+        GOOS=windows GOARCH=386 BUILDPATH=./bin/node-cert-exporter-windows-386.exe make
+        # Darwin
         GOOS=darwin GOARCH=amd64 BUILDPATH=./bin/node-cert-exporter-darwin-amd64 make
+        GOOS=darwin GOARCH=arm64 BUILDPATH=./bin/node-cert-exporter-darwin-arm64 make
+        # Freebsd
+        GOOS=freebsd GOARCH=amd64 BUILDPATH=./bin/node-cert-exporter-freebsd-amd64 make
+        GOOS=freebsd GOARCH=386 BUILDPATH=./bin/node-cert-exporter-freebsd-386 make
+        GOOS=freebsd GOARCH=arm BUILDPATH=./bin/node-cert-exporter-freebsd-arm make
 
     - name: Create Release
       uses: actions/create-release@v1
