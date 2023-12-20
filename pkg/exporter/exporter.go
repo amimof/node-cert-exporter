@@ -33,7 +33,9 @@ func isCertFile(p string) bool {
 func (e *Exporter) isExcluded(s string) bool {
 	for _, v := range e.excludeGlobs {
 		exclude, _ := filepath.Match(v, s)
-		return exclude
+		if exclude {
+			return exclude
+		}
 	}
 	return false
 }
