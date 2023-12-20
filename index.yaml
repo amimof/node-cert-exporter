@@ -2,6 +2,23 @@ apiVersion: v1
 entries:
   node-cert-exporter:
   - apiVersion: v2
+    appVersion: 1.1.5
+    created: "2023-12-20T13:42:39.398791908Z"
+    description: A Helm chart for node-cert-exporter - An SSL certificate Prometheus
+      exporter
+    digest: 37d0cca462587d9a5ee4bb6312fb7fd38cf64e147a289a9c0608cd825a9fdbc6
+    home: https://github.com/amimof/node-cert-exporter
+    maintainers:
+    - name: amimof
+      url: https://github.com/amimof
+    name: node-cert-exporter
+    sources:
+    - https://github.com/amimof/node-cert-exporter
+    type: application
+    urls:
+    - https://github.com/amimof/node-cert-exporter/releases/download/node-cert-exporter-1.1.5/node-cert-exporter-1.1.5.tgz
+    version: 1.1.5
+  - apiVersion: v2
     appVersion: 1.1.3
     created: "2023-03-23T07:31:24.163738941Z"
     description: A Helm chart for node-cert-exporter - An SSL certificate Prometheus
@@ -52,4 +69,4 @@ entries:
     urls:
     - https://github.com/amimof/node-cert-exporter/releases/download/v1.1.1/node-cert-exporter-1.1.1.tgz
     version: 1.1.1
-generated: "2023-03-23T07:31:24.163754641Z"
+generated: "2023-12-20T13:42:39.398813479Z"
