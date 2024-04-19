@@ -30,3 +30,14 @@ resources:
   requests:
     cpu: 100m
     memory: 128Mi
+
+volumes:
+  - hostPath:
+      path: /etc
+      type: ""
+    name: etc
+
+volumeMounts:
+  - mountPath: /host/etc
+    name: etc
+    readOnly: true

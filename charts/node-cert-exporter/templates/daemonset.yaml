@@ -42,18 +42,17 @@ spec:
               protocol: TCP
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          {{- with .Values.volumeMounts }}
           volumeMounts:
-            - mountPath: /host/etc
-              name: etc
-              readOnly: true
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- with .Values.volumes }}
       volumes:
-        - hostPath:
-            path: /etc
-            type: ""
-          name: etc
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
   updateStrategy:
     type: RollingUpdate
