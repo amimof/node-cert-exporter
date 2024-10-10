@@ -27,21 +27,23 @@ var BRANCH string
 var GOVERSION string
 
 var (
-	host         string
-	port         int
-	listen       string
-	paths        []string
-	excludePaths []string
-	includeGlobs []string
-	excludeGlobs []string
-	tls          bool
-	tlsCertFile  string
-	tlsKeyFile   string
+	host          string
+	port          int
+	listen        string
+	telemetryPath string
+	paths         []string
+	excludePaths  []string
+	includeGlobs  []string
+	excludeGlobs  []string
+	tls           bool
+	tlsCertFile   string
+	tlsKeyFile    string
 )
 
 func init() {
 	prometheus.MustRegister(version.NewCollector("prometheus_cert_exporter"))
 	pflag.StringVar(&listen, "listen", ":9117", "Address to listen on for metrics and telemetry. Defaults to :9117")
+	pflag.StringVar(&telemetryPath, "telemetry-path", "/metrics", "Path under which to expose metrics.")
 	pflag.StringSliceVar(&paths, "path", []string{"."}, "List of paths to search for SSL certificates. Defaults to current directory.")
 	pflag.StringSliceVar(&excludePaths, "exclude-path", []string{}, "List of paths to exclute from searching for SSL certificates.")
 	pflag.StringSliceVar(&includeGlobs, "include-glob", []string{}, "List files matching a pattern to include. This flag can be used multiple times.")
@@ -75,7 +77,7 @@ func main() {
 	prometheus.MustRegister(e)
 
 	glog.V(2).Infof("Listening on %s", listen)
-	http.Handle("/metrics", promhttp.Handler())
+	http.Handle(telemetryPath, promhttp.Handler())
 
 	if tls {
 		if tlsCertFile == "" || tlsKeyFile == "" {
