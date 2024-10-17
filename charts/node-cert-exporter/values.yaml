@@ -12,8 +12,8 @@ paths:
   - /host/etc/kubernetes/pki/
 
 podAnnotations:
-  prometheus.io/scrape: 'true'
-  prometheus.io/port: '9117'
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "9117"
 
 tolerations:
   # Allow running on masters:

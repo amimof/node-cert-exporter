@@ -3,8 +3,8 @@ name: node-cert-exporter
 description: A Helm chart for node-cert-exporter - An SSL certificate Prometheus exporter
 home: https://github.com/amimof/node-cert-exporter
 maintainers:
-- name: amimof
-  url: https://github.com/amimof
+  - name: amimof
+    url: https://github.com/amimof
 # A chart can be either an 'application' or a 'library' chart.
 #
 # Application charts are a collection of templates that can be packaged into versioned archives
@@ -25,4 +25,4 @@ version: 1.1.7
 # follow Semantic Versioning. They should reflect the version the application is using.
 appVersion: "1.1.6"
 sources:
-- https://github.com/amimof/node-cert-exporter
+  - https://github.com/amimof/node-cert-exporter
