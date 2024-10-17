@@ -2,66 +2,56 @@ name: Go
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
-  verify:
+  staticcheck:
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '>=1.21.0'
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.21
 
-    - name: Check Formating
-      run: make checkfmt
-    - name: Format Code
-      run: make fmt  
-    - name: Go Vet
-      run: make vet 
-    - name: Go Race
-      run: make race
-    - name: Gocyclo
-      run: make gocyclo
-    - name: Lint
-      run: make lint 
-    - name: Ineffassign
-      run: make ineffassign
-    - name: Misspell
-      run: make misspell
-    - name: Helm Lint
-      run: make helm_lint
+      - name: Lint
+        run: make lint
+      - name: Go Vet
+        run: make vet
+      - name: Helm Lint
+        run: make helm_lint
 
   test:
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '>=1.21.0'
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.21
 
-    - name: Test
-      run: make test
-    - name: Benchmark
-      run: make benchmark
-    - name: Coverage
-      run: make coverage
-      
+      - name: Test
+        run: make test
+      - name: Race
+        run: make race
+      - name: Benchmark
+        run: make benchmark
+      - name: Coverage
+        run: make coverage
+
   build:
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '>=1.21.0'
-    
-    - name: Compile
-      run: make
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ">=1.21.0"
+
+      - name: Compile
+        run: make

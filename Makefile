@@ -47,45 +47,18 @@ $(INTDIR):
 	@mkdir -p $@
 $(TBIN)/%: | $(TBIN) ; $(info $(M) building $(PACKAGE))
 	$Q tmp=$$(mktemp -d); \
-	   env GO111MODULE=off GOPATH=$$tmp GOBIN=$(TBIN) $(GO) get $(PACKAGE) \
+	   env GOBIN=$(TBIN) $(GO) install $(PACKAGE) \
 		|| ret=$$?; \
-	   rm -rf $$tmp ; exit $$ret
+	   #rm -rf $$tmp ; exit $$ret
 
-GOLINT = $(TBIN)/golint
-$(BIN)/golint: PACKAGE=golang.org/x/lint/golint
-
-GOCYCLO = $(TBIN)/gocyclo
-$(TBIN)/gocyclo: PACKAGE=github.com/fzipp/gocyclo/cmd/gocyclo
-
-INEFFASSIGN = $(TBIN)/ineffassign
-$(TBIN)/ineffassign: PACKAGE=github.com/gordonklaus/ineffassign
-
-MISSPELL = $(TBIN)/misspell
-$(TBIN)/misspell: PACKAGE=github.com/client9/misspell/cmd/misspell
-
-GOLINT = $(TBIN)/golint
-$(TBIN)/golint: PACKAGE=golang.org/x/lint/golint
-
-GOCOV = $(TBIN)/gocov
-$(TBIN)/gocov: PACKAGE=github.com/axw/gocov/...
+GOCILINT = $(TBIN)/golangci-lint
+$(TBIN)/golangci-lint: PACKAGE=github.com/golangci/golangci-lint/cmd/golangci-lint@v1.57.2
 
 # Tests
 
 .PHONY: lint
-lint: | $(GOLINT) ; $(info $(M) running golint) @ ## Runs the golint command
-	$Q $(GOLINT) -set_exit_status $(PKGS)
-
-.PHONY: gocyclo
-gocyclo: | $(GOCYCLO) ; $(info $(M) running gocyclo) @ ## Calculates cyclomatic complexities of functions in Go source code
-	$Q $(GOCYCLO) -over 25 .
-
-.PHONY: ineffassign
-ineffassign: | $(INEFFASSIGN) ; $(info $(M) running ineffassign) @ ## Detects ineffectual assignments in Go code
-	$Q $(INEFFASSIGN) ./...
-
-.PHONY: misspell
-misspell: | $(MISSPELL) ; $(info $(M) running misspell) @ ## Finds commonly misspelled English words
-	$Q $(MISSPELL) .
+lint: | $(GOCILINT) ; $(info $(M) running golangci-lint) @ ## Runs static code analysis using golangci-lint
+	$Q $(GOCILINT) run --timeout=5m
 
 .PHONY: test
 test: ; $(info $(M) running go test) @ ## Runs unit tests
@@ -117,7 +90,7 @@ checkfmt: ; $(info $(M) running checkfmt) @ ## Checks if code is formatted with 
 	@test "$(shell $(SRC_FILES) gofmt -l)" = "" \
     || { echo "Code not formatted, please run 'make fmt'"; exit 2; }
 
-.PHONY: checkfmt
+.PHONY: integration-test
 integration-test: | $(INTDIR) docker_build ; $(info $(M) running integration tests) @ ## Run integration tests
 	mkdir -p ${INTDIR}/ssl
 	openssl req -new -newkey rsa:1024 -days 365 -nodes -x509 \
