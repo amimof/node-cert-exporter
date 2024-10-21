@@ -132,9 +132,7 @@ func (e *Exporter) Scrape(ch chan<- prometheus.Metric) {
 			glog.Warningf("%s", err)
 			continue
 		}
-		for _, match := range matches {
-			paths = append(paths, match)
-		}
+		paths = append(paths, matches...)
 	}
 
 	// Read files defined in paths from fs and try to parse a x509 certificate from them.
