@@ -27,8 +27,6 @@ var BRANCH string
 var GOVERSION string
 
 var (
-	host          string
-	port          int
 	listen        string
 	telemetryPath string
 	paths         []string
