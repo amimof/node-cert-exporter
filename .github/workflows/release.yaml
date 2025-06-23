@@ -67,8 +67,8 @@ jobs:
       - name: Generate checksums
         run: |
           cd bin
-          sha256sum * > sha256sum.txt
-          sha512sum * > sha512sum.txt
+          sha256sum node-cert-exporter-* > sha256sum.txt
+          sha512sum node-cert-exporter-* > sha512sum.txt
 
       - name: Create Release
         uses: ncipollo/release-action@v1
