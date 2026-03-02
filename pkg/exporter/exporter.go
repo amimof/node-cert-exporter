@@ -57,6 +57,7 @@ type Exporter struct {
 	roots        []string
 	exRoots      []string
 	certExpiry   *prometheus.GaugeVec
+	certExpRatio *prometheus.GaugeVec
 	certFailed   *prometheus.GaugeVec
 }
 
@@ -90,6 +91,7 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 // Describe satisfies prometheus.Collector interface
 func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
 	ch <- e.certExpiry.WithLabelValues("path", "issuer", "alg", "version", "subject", "dns_names", "email_addresses", "hostname", "nodename", "serial").Desc()
+	ch <- e.certExpRatio.WithLabelValues("path", "issuer", "alg", "version", "subject", "dns_names", "email_addresses", "hostname", "nodename", "serial").Desc()
 }
 
 // Scrape iterates over the list of file paths (set by SetRoot) and parses any found x509 certificates.
@@ -175,6 +177,24 @@ func (e *Exporter) Scrape(ch chan<- prometheus.Metric) {
 		since := time.Until(cert.NotAfter)
 		e.certExpiry.With(labels).Set(since.Seconds())
 		ch <- e.certExpiry.With(labels)
+
+		// Calculate and export relative expiry ratio
+		// Ratio = time_remaining / total_validity_period
+		// 1.0 = just issued, 0.5 = 50% of lifetime remaining, 0.0 = expired
+		totalValidity := cert.NotAfter.Sub(cert.NotBefore).Seconds()
+		timeRemaining := time.Until(cert.NotAfter).Seconds()
+		ratio := 0.0
+		if totalValidity > 0 {
+			ratio = timeRemaining / totalValidity
+			// Clamp ratio to [0, 1] range to handle edge cases
+			if ratio < 0 {
+				ratio = 0
+			} else if ratio > 1 {
+				ratio = 1
+			}
+		}
+		e.certExpRatio.With(labels).Set(ratio)
+		ch <- e.certExpRatio.With(labels)
 	}
 
 }
@@ -187,6 +207,13 @@ func New() *Exporter {
 			Subsystem: "expiry",
 			Name:      "seconds",
 			Help:      "Number of seconds until certificate expires",
+		},
+			[]string{"path", "issuer", "alg", "version", "subject", "dns_names", "email_addresses", "hostname", "nodename", "serial"}),
+		certExpRatio: prometheus.NewGaugeVec(prometheus.GaugeOpts{
+			Namespace: "ssl_certificate",
+			Subsystem: "expiry",
+			Name:      "ratio",
+			Help:      "Ratio of remaining certificate lifetime to total validity period (1.0 = just issued, 0.5 = 50% remaining, 0.0 = expired)",
 		},
 			[]string{"path", "issuer", "alg", "version", "subject", "dns_names", "email_addresses", "hostname", "nodename", "serial"}),
 		certFailed: prometheus.NewGaugeVec(prometheus.GaugeOpts{
