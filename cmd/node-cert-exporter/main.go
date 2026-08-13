@@ -9,8 +9,8 @@ import (
 	"github.com/amimof/node-cert-exporter/pkg/exporter"
 	"github.com/golang/glog"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/collectors/version"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/prometheus/common/version"
 	"github.com/spf13/pflag"
 )
 
