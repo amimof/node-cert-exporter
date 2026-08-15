@@ -3,7 +3,6 @@ package exporter
 import (
 	"crypto/x509"
 	"encoding/pem"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -140,7 +139,7 @@ func (e *Exporter) Scrape(ch chan<- prometheus.Metric) {
 		if e.isExcluded(path) {
 			continue
 		}
-		data, err := ioutil.ReadFile(path)
+		data, err := os.ReadFile(path)
 		if err != nil {
 			glog.Warningf("Couldn't read %s: %s", path, err.Error())
 			ch <- e.certFailed.With(prometheus.Labels{"path": path, "hostname": hostname, "nodename": nodename})
@@ -176,7 +175,6 @@ func (e *Exporter) Scrape(ch chan<- prometheus.Metric) {
 		e.certExpiry.With(labels).Set(since.Seconds())
 		ch <- e.certExpiry.With(labels)
 	}
-
 }
 
 // New creates an instance of Exporter and returns it
