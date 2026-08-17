@@ -54,7 +54,6 @@ jobs:
           GOOS=linux GOARCH=386 BUILDPATH=./bin/node-cert-exporter-linux-386 make
           # Windows
           GOOS=windows GOARCH=amd64 BUILDPATH=./bin/node-cert-exporter-windows-amd64.exe make
-          GOOS=windows GOARCH=arm BUILDPATH=./bin/node-cert-exporter-windows-arm.exe make
           GOOS=windows GOARCH=386 BUILDPATH=./bin/node-cert-exporter-windows-386.exe make
           # Darwin
           GOOS=darwin GOARCH=amd64 BUILDPATH=./bin/node-cert-exporter-darwin-amd64 make
@@ -63,6 +62,12 @@ jobs:
           GOOS=freebsd GOARCH=amd64 BUILDPATH=./bin/node-cert-exporter-freebsd-amd64 make
           GOOS=freebsd GOARCH=386 BUILDPATH=./bin/node-cert-exporter-freebsd-386 make
           GOOS=freebsd GOARCH=arm BUILDPATH=./bin/node-cert-exporter-freebsd-arm make
+
+      - name: Generate checksums
+        run: |
+          cd bin
+          sha256sum node-cert-exporter-* > sha256sum.txt
+          sha512sum node-cert-exporter-* > sha512sum.txt
 
       - name: Create Release
         uses: ncipollo/release-action@v1
