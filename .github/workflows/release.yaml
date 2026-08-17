@@ -54,7 +54,6 @@ jobs:
           GOOS=linux GOARCH=386 BUILDPATH=./bin/node-cert-exporter-linux-386 make
           # Windows
           GOOS=windows GOARCH=amd64 BUILDPATH=./bin/node-cert-exporter-windows-amd64.exe make
-          GOOS=windows GOARCH=arm BUILDPATH=./bin/node-cert-exporter-windows-arm.exe make
           GOOS=windows GOARCH=386 BUILDPATH=./bin/node-cert-exporter-windows-386.exe make
           # Darwin
           GOOS=darwin GOARCH=amd64 BUILDPATH=./bin/node-cert-exporter-darwin-amd64 make
